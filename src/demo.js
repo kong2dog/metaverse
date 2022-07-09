@@ -1,8 +1,6 @@
-import apm3d from './index';
-
-window.app = new apm3d.Application({
+import Application from './application/Application';
+window.app = new Application({
     dom: document.getElementById('warp'),
-    scene: new apm3d.EarthScene()
 });
 window.app.start();
 

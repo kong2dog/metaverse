@@ -1,8 +1,5 @@
 // 所有场景的基类
 
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import CameraManager from '../managers/camera';
 
 export default class WebGLScene {
     constructor() {
@@ -17,9 +14,8 @@ export default class WebGLScene {
      * @param {*} renderer // 3d渲染
      * @param {*} labelRenderer // 标签渲染
      */
-    Init(renderer, labelRenderer) {
+    Init(renderer) {
         this.renderer = renderer;
-        this.labelRenderer = labelRenderer;
         this.Scene.background = new THREE.Color('#ffffff');
         this.startLoading();
         const size = new THREE.Vector2();
@@ -35,22 +31,7 @@ export default class WebGLScene {
         this.cameraManager.controls = this.controls;
         this.Create();
     }
-
-    startLoading() {
-        const domObj = document.createElement('div');
-        domObj.id = 'apm-3d-loading';
-        domObj.style = 'display: block';
-        domObj.style = "display: block;position:absolute; left: 0px; right: 0px; bottom: 0px;top: 0px;background-image: url('http://fastcdn.apmyushu.com/yushuweb/loading-high.gif');background-repeat: no-repeat;background-size: auto; background-position: center;background-color: #FFFFFF;";
-        this.dom.appendChild(domObj);
-    }
-
-    stopLoading() {
-        const dom = document.getElementById('apm-3d-loading');
-        if (dom) {
-            dom.remove();
-        }
-    }
-
+    
     Create() {
     }
 

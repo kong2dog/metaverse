@@ -25,7 +25,6 @@ module.exports = {
     devtool: 'inline-source-map',
 
     devServer: {
-        host: '0.0.0.0',
         port: 8011,
         open: true,
         hot: true,
@@ -33,6 +32,9 @@ module.exports = {
             rewrites: [
                 { from: /\*/, to: 'index.html' }
             ]
+        },
+        static: {
+            directory: path.join(__dirname, 'dist')
         }
     },
     resolve: {

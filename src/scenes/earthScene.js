@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import _ from 'lodash';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import WebGLScene from './webglScene';
 
 export default class EarthScene extends WebGLScene {
@@ -12,6 +15,7 @@ export default class EarthScene extends WebGLScene {
     Create() {
         if (this.load) return;
         this.particleManagers = [];
+        this.clock = new THREE.Clock();
         this.root = new THREE.Object3D();
         this.Scene.add(this.root);
         this.Scene.add(new THREE.AxesHelper(15500));
@@ -32,17 +36,20 @@ export default class EarthScene extends WebGLScene {
         const qulityM = 1024;
         const qulityL = 512;
         const castShadowSet = [false, false, false, false, false];
-        const power = 0.4;
+        const power = 1;
         // 点光 配置
         const pointHeight = 200;
         const pointPower = 0.1;
         // 环境光
-        this.amlight = new THREE.AmbientLight('#b5b5b5', 1);
+        this.amlight = new THREE.AmbientLight('#ffffff', 1);
 
         this.amlight.up.set(0, 1, 0);
         this.Scene.add(this.amlight);
+        this.Scene.background = new THREE.Color(0xbfe3dd);
+        const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+        this.Scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
         this.light1 = new THREE.DirectionalLight(0xFFFFFF, power);
-        this.light1.position.set(100, -350, 100);
+        this.light1.position.set(100, 100, 100);
         this.light1.castShadow = castShadowSet[0];
         this.light1.shadow.mapSize.width = qulityL;
         this.light1.shadow.mapSize.height = qulityL;
@@ -53,7 +60,7 @@ export default class EarthScene extends WebGLScene {
 
     initCamera() {
         this.camera.fov = 45;
-        this.camera.position.set(0.3, 0.3, 0.3);
+        this.camera.position.set(50, 50, 50);
         this.camera.up.set(0, 1, 0);
         this.camera.far = 20000;
         this.controls.minDistance = 0;
@@ -71,7 +78,7 @@ export default class EarthScene extends WebGLScene {
     testModel() {
         const loader = new FBXLoader();
         loader.load(
-            'https://aim-resouce-1307155645.cos.ap-chengdu.myqcloud.com/yushuweb/%E5%9C%B0%E7%90%83.FBX',
+            'http://fastcdn.apmyushu.com/yushuweb/daughter/head_kohaku.FBX',
             (obj) => {
                 console.log(obj);
                 this.root.add(obj);
@@ -79,10 +86,38 @@ export default class EarthScene extends WebGLScene {
                 this.load = true;
             }
         );
+        loader.load(
+            'http://fastcdn.apmyushu.com/yushuweb/daughter/body_schoolgymsuit.FBX',
+            (obj) => {
+                console.log(obj);
+                this.root.add(obj);
+                this.stopLoading();
+                this.load = true;
+            }
+        );
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('loader/gltf/');
+        const gloader = new GLTFLoader();
+        gloader.setDRACOLoader(dracoLoader);
+        gloader.load('http://fastcdn.apmyushu.com/yushuweb/LittlestTokyo.glb', (gltf) => {
+            const model = gltf.scene;
+            model.position.set(1, 1, 0);
+            model.scale.set(0.01, 0.01, 0.01);
+            this.Scene.add(model);
+
+            this.mixer = new THREE.AnimationMixer(model);
+            this.mixer.clipAction(gltf.animations[0]).play();
+        }, undefined, (e) => {
+            console.error(e);
+        });
     }
 
     Update() {
         super.Update();
+        if (this.mixer) {
+            const delta = this.clock.getDelta();
+            this.mixer.update(delta);
+        }
         this.controls.update();
     }
 
