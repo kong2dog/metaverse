@@ -23,7 +23,6 @@ export default class Store {
       };
       this.prefix = 'meta:';
       this.loaded = false;
-      this.units = {};
   }
 
   load() {
@@ -32,15 +31,15 @@ export default class Store {
   }
 
   persist() {
-      if (this.loaded === false) return;
-      const { prefix } = this;
-      const allKeys = [];
-      Object.keys(this.state).forEach(key => {
-          const unitValue = JSON.stringify(this.state[key]);
-          const unitKey = prefix + key;
-          allKeys.push(unitKey);
-          // localStorage.setItem(unitKey, unitValue);
-      });
+      // if (this.loaded === false) return;
+      // const { prefix } = this;
+      // const allKeys = [];
+      // Object.keys(this.state).forEach(key => {
+      //     const unitValue = JSON.stringify(this.state[key]);
+      //     const unitKey = prefix + key;
+      //     allKeys.push(unitKey);
+      //     // localStorage.setItem(unitKey, unitValue);
+      // });
       // localStorage.setItem(`${prefix}store:allKeys`, JSON.stringify(allKeys));
   }
 
@@ -118,16 +117,16 @@ export default class Store {
   }
 
   onKeyup(event) {
-    delete this._triggered[event.keyCode];
-    delete this._pressed[event.keyCode];
+    delete this.state._triggered[event.keyCode];
+    delete this.state._pressed[event.keyCode];
   }
 
   multipleCamControllsPressed() {
     let counter;
-    if(this._pressed[this.LEFT]) counter++;
-    if(this._pressed[this.RIGHT]) counter++; 
-    if(this._pressed[this.UP]) counter++; 
-    if(this._pressed[this.DOWN]) counter++;
+    if(this.state._pressed[this.LEFT]) counter++;
+    if(this.state._pressed[this.RIGHT]) counter++; 
+    if(this.state._pressed[this.UP]) counter++; 
+    if(this.state._pressed[this.DOWN]) counter++;
 
     return counter > 1;
   }
@@ -138,13 +137,5 @@ export default class Store {
 
   setState(key, state) {
       this.state[key] = state;
-  }
-
-  getUnit(key) {
-      return this.units[key];
-  }
-
-  setUnit(key, value) {
-      this.units[key] = value;
   }
 }

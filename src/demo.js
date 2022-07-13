@@ -1,4 +1,4 @@
-import Application from './application/Application';
+import Application from './application/Application.js';
 window.app = new Application({
     dom: document.getElementById('warp'),
 });

@@ -1,7 +1,7 @@
 import Stats from 'stats.js';
-import Store from '../store/Store';
+import Store from '../store/Store.js';
 import * as BABYLON from '@babylonjs/core';
-import BabylonScene from '../scenes/babylonScene';
+import BabylonScene from '../scenes/babylonScene.js';
 export default class Application {
     constructor({
         dom
@@ -31,12 +31,6 @@ export default class Application {
             this.store.setState('updatedAt', this.lastStoreTime);
             this.store.persist();
         }
-        // this.animationFrame = requestAnimationFrame((timeRange) => {
-        //     this.update();
-        // });
-        // if (this.destroyed) {
-        //     window.cancelAnimationFrame(this.animationFrame);
-        // }
     }
 
     start() {
@@ -52,7 +46,7 @@ export default class Application {
         this.engine = new BABYLON.Engine(this.canvas, true, {preserveDrawingBuffer: true, stencil: true}, true);
 
         this.stats = new Stats();
-        this.dom.appendChild(this.stats.domElement);
+        // this.dom.appendChild(this.stats.domElement);
         this.scene = new BabylonScene(this.engine, this.canvas, this.store);
         this.scene.Create();
         this.loaded = true;

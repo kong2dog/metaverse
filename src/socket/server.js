@@ -1,10 +1,10 @@
-const ws = require('ws')
-const util = require('util')
-const Player = require('../models/Player.js')
+import ws, {WebSocketServer, WebSocket} from 'ws'
+import util from 'util'
+import Player from '../models/Player.js'
 const players = [];
 const spread = 400;
 
-const wss = new ws.WebSocketServer({
+const wss = new WebSocketServer({
 	port: 9988,
 	perMessageDeflate: {
 		zlibDeflateOptions: {
@@ -27,19 +27,27 @@ const wss = new ws.WebSocketServer({
 	}
 })
 
-wss.on('connection', function connection(ws) {
-	ws.on('message', function message(data) {
-		console.log(data.toString())
+wss.on('connection', function connection(wsclient) {
+	wsclient.on('message', (bu) => {
+		console.log(bu.toString())
+		let data 
+		try{
+			data = JSON.parse(bu.toString())
+		} catch (e) {
+			data = bu.toString()
+		}
 		if(data.cmd === 'setId'){
-			onClientConnect(ws)
+			wsclient.id = data.id
+			onClientConnect(wsclient)
+			onSetUserName(wsclient, {userName: data.id})
 		}else	if(data.cmd === 'set userName'){
-			onSetUserName(data)
+			onSetUserName(wsclient, data)
 		}else if(data.cmd === 'disconnect'){
-			onClientDisconnect(data);
+			onClientDisconnect(wsclient, data)
 		}else if(data.cmd === 'request init game'){
-			onClientRequestInit(data);
+			onClientRequestInit(wsclient, data);
 		}else if(data.cmd === 'update position'){
-			onUpdatePosition(data);
+			onUpdatePosition(wsclient, data);
 		}else if(data.cmd === 'hit player'){
 			onPlayerHit(data);
 		}else if(data.cmd === 'player suicide'){
@@ -54,12 +62,12 @@ wss.on('connection', function connection(ws) {
 	});
 });
 
-function onSetUserName(data) {
-	const player = playerById(this.id)
+function onSetUserName(wsclient, data) {
+	const player = playerById(wsclient.id)
 	player._name = data.userName;
 	wss.clients.forEach((client) => {
-		if (client !== this && client.readyState === WebSocket.OPEN) {
-			client.send({cmd: 'start render', player: clientPlayer}, { binary: false });
+		if (client !== wsclient && client.readyState === WebSocket.OPEN) {
+			client.send(JSON.stringify({cmd: 'start render', player: player}));
 		}
 	});
 }
@@ -75,55 +83,57 @@ function onClientConnect(client) {
 	console.log(newPlayer)
 }
 
-function onClientRequestInit() {
-	//Find clients player
-  const clientPlayer = playerById(this.id);
+function onClientRequestInit(wsclient, data) {
+	console.log(wsclient.id)
+	// Find clients player
+  const clientPlayer = playerById(wsclient.id);
   // Player not found
 	if (!clientPlayer) {
-		util.log("Player not found: "+this.id);
+		util.log("Player not found: "+wsclient.id);
 		return;
 	};  
-    //Get all Infos of the other Players
-    const remotePlayer = [];
-    //Emitting all players to the new player
+  // Get all Infos of the other Players
+  const remotePlayers = [];
+  // Emitting all players to the new player
 	for (let i = 0; i < players.length; i++) {
-		if(players[i]._id != this.id && players[i]._name != "") 
-	       remotePlayer.push(players[i]);	 
+		if(players[i]._id != wsclient.id) 
+	       remotePlayers.push(players[i]);	 
 	}
-  //Send the init information to the Client
+  // Send the init information to the Client
 
-  this.send({cmd: 'init game', localPlayer: clientPlayer , remotePlayers : remotePlayer });
-  //Tell all current players, there is a new player
+  wsclient.send(JSON.stringify({cmd: 'init game', localPlayer: clientPlayer , remotePlayers : remotePlayers }));
+  // Tell all current players, there is a new player
 	wss.clients.forEach((client) => {
-		if (client !== this && client.readyState === WebSocket.OPEN) {
-			client.send({cmd: 'new plahyer', player: clientPlayer}, { binary: false });
+		if (client !== ws && client.readyState === WebSocket.OPEN) {
+			client.send(JSON.stringify({cmd: 'new player', player: clientPlayer}, { binary: false }));
 		}
 	});
 }
 
-function onClientDisconnect() {
-	util.log("Player has disconnected: "+this.id);
-	const removePlayer = playerById(this.id);
+function onClientDisconnect(wsclient) {
+	util.log("Player has disconnected: "+wsclient.id);
+	const removePlayer = playerById(wsclient.id);
 	// Player not found
 	if (!removePlayer) {
-		util.log("Player not found: "+this.id);
+		util.log("Player not found: "+wsclient.id);
 		return;
 	};
 	// Remove player from players array
 	players.splice(players.indexOf(removePlayer), 1);
 	// Broadcast removed player to connected socket clients
 	wss.clients.forEach((client) => {
-		if (client !== this && client.readyState === WebSocket.OPEN) {
+		if (client !== wsclient && client.readyState === WebSocket.OPEN) {
 			client.send({cmd: 'remove player', player: clientPlayer}, { binary: false });
 		}
 	});
 }
 
-function onUpdatePosition(data) {
-	const movedPlayer = playerById(this.id);
+function onUpdatePosition(wsclient, data) {
+	console.log(data)
+	const movedPlayer = playerById(wsclient.id);
 	// Player not found
 	if (!movedPlayer) {
-		util.log("Player not found (onUpdatePosition): " + this.id);
+		util.log("Player not found (onUpdatePosition): " + wsclient.id);
 		return;
 	} 
 	//Update model player instance on Server 
@@ -131,8 +141,8 @@ function onUpdatePosition(data) {
 	movedPlayer.setRotXYZ(data.rot.x, data.rot.y, data.rot.z);      
 	//Broadcast position change to all other players 
 	wss.clients.forEach((client) => {
-		if (client !== this && client.readyState === WebSocket.OPEN) {
-			client.send({cmd: 'move player', data: { id: this.id, rot : data.rot, pos : data.pos}});
+		if (client !== wsclient && client.readyState === WebSocket.OPEN) {
+			client.send(JSON.stringify({cmd: 'move player', id: wsclient.id, rot : data.rot, pos : data.pos}));
 		}
 	});
 }

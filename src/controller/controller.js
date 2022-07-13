@@ -1,5 +1,7 @@
+import LocalPlayer from "../models/localPlayer.js";
 const ws = new WebSocket('ws://127.0.0.1:9988')
-
+import RemotePlayer from "../models/remotePlayer.js";
+import Player from '../models/Player.js';
 export default class Controller {
     constructor(scene) {
         this.isController = true;
@@ -27,13 +29,9 @@ export default class Controller {
             id: params.id
         }
         this.client.send(JSON.stringify(data))
-        
     }
 
     onStartRender() {
-        if(!this.store.state.gameStarted){
-            this.addGameEvents();
-        }
         this.store.setState('gameStarted', true)
     }
 
@@ -41,11 +39,14 @@ export default class Controller {
         this.client.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
             console.log('client: %s', event);
-            if(data.cmd === 'new player'){
+            if(data.cmd === 'start render'){
+                this.onStartRender()
+            }else if(data.cmd === 'new player'){
                 this.onNewPlayer(data)
             }else if(data.cmd === 'init game'){
                 this.onInitGame(data);
             }else if(data.cmd === 'move player'){
+                console.log(data)
                 this.onMovePlayer(data);
             }else if(data.cmd === 'remove player'){
                 this.onRemovePlayer(data);
@@ -89,10 +90,10 @@ export default class Controller {
     }
 
     respawnPlayer(player) {
-        if(this.store.state.localPlayer._id === player._id){
-            this.store.state.localPlayer.setDead(player._isDead);
-            this.store.state.localPlayer.setHitPoints(player._hitPoints);
-            this.store.state.localPlayer.setXYZ(player._x, player._y, player._z);
+        if(this.store.state.localPlayer.player._id === player._id){
+            this.store.state.localPlayer.player.setDead(player._isDead);
+            this.store.state.localPlayer.player.setHitPoints(player._hitPoints);
+            this.store.state.localPlayer.player.setXYZ(player._x, player._y, player._z);
         }else{
             const remotePlayer = this._findPlayer(player._id);
             remotePlayer.setDead(player._isDead);
@@ -115,11 +116,21 @@ export default class Controller {
     }
 
     onInitGame(data) {
-        this.store.state.localPlayer = data.localPlayer;
+        this.setLocalPlayer(data.localPlayer);
+        // this.store.state.localPlayer = data.localPlayer;
         for (var i = 0; i < data.remotePlayers.length; i++) {
             this.addRemotePlayer(data.remotePlayers[i]); 
         };
         this.initPlayersDone();
+    }
+
+    setLocalPlayer(player) {
+        console.log('set local')
+        console.log(player)
+        const p = this.clonePlayer(player)
+        this.store.state.localPlayer = new LocalPlayer(this.scene, p);
+        console.log(this.store.state.localPlayer.Update)
+        this.scene.load = true
     }
 
     onRemovePlayer(data) {
@@ -165,7 +176,8 @@ export default class Controller {
     }
 
     addRemotePlayer(player) {
-        const remotePlayer = player;
+        const p = this.clonePlayer(player);
+        const remotePlayer = new RemotePlayer(this.scene, p)
         this.store.state.remotePlayers.push(remotePlayer);
     }
 
@@ -174,15 +186,18 @@ export default class Controller {
     }
 
     movePlayer(id, pos, rot) {
+        console.log(id)
         const player = this._findPlayer(id);
+        console.log(player)
         if(!player) return;
-        player.setXYZ(pos.x, pos.y, pos.z);
-        player.setRotXYZ(rot.x, rot.y, rot.z);
+        player.move(pos, rot)
+        player.player.setXYZ(pos.x, pos.y, pos.z);
+        player.player.setRotXYZ(rot.x, rot.y, rot.z);
     }
 
     _findPlayer(id) {
         for(let i = 0; i < this.store.state.remotePlayers.length; i++){
-            if(this.store.state.remotePlayers[i]._id === id){
+            if(this.store.state.remotePlayers[i].player._id === id){
                 return this.store.state.remotePlayers[i]
             }
         }
@@ -190,7 +205,7 @@ export default class Controller {
     }
 
     Update() {
-
+        this.store.state.localPlayer.Update();
     }
 
     Create() {
@@ -203,22 +218,40 @@ export default class Controller {
 
     requestAllPlayers () {
         console.log('request to load players')
+        const data = {
+            cmd: 'request init game'
+        }
+        this.client.send(JSON.stringify(data))
     }
 
     initPlayersDone() {
         console.log('initial all players done')
     }
 
-    setLocalPlayer(player) {
-        this.localPlayer = player
-    }
-
-    addRemotePlayer(player) {
-        const rp = this._clonePlayer(player)
-        this.remotePlayers.push(rp);
-    }
-
     sendLocalPlayerMovement(pos, rot) {
+        const position = { x: pos.x, y : pos.y , z : pos.z}; 
+        const rotation = { x: rot.x, y : rot.y , z : rot.z};
+        //Send new position and rotation to the server
+        this.client.send(JSON.stringify({
+            cmd: 'update position',
+            pos: position,
+            rot: rotation
+        }))
+        //Update the localPlayer model on the Client
+        this.store.state.localPlayer.player.setXYZ(pos.x, pos.y, pos.z);
+        this.store.state.localPlayer.player.setRotXYZ(rot.x, rot.y, rot.z);
+    }
 
+    clonePlayer(p) {
+        const player = new Player(p._x, p._y, p._z);
+        player.setRotXYZ( p._x , p._y , p._z );
+        player.setID(p._id);
+        player.setColor(p._color.r , p._color.g , p._color.b);
+        player.setHitPoints(p._hitPoints);
+        player.setName(p._name);
+        player._isDead = p._isDead;
+        player._kills = p._kills;
+        player._deaths = p._deaths;
+        return player;
     }
 }

@@ -1,4 +1,4 @@
-class Player {
+export default class Player {
 	constructor(
 		x, y, z
 	) {
@@ -17,6 +17,14 @@ class Player {
 
 		this._deaths = 0;
 		this._kills = 0;
+	}
+
+	setID(id) {
+		this._id = id;
+	}
+
+	setName(name) {
+		this._name = name;
 	}
 
 	setColor(r,g,b) {
@@ -67,5 +75,3 @@ class Player {
 		this._kills += 1;
 	}
 }
-
-module.exports = Player

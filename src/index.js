@@ -1,6 +1,6 @@
-import Store from './store/Store';
-import Application from './application/Application';
-import EarthScene from './scenes/earthScene';
+import Store from './store/Store.js';
+import Application from './application/Application.js';
+import EarthScene from './scenes/earthScene.js';
 
 export default {
     Store,
