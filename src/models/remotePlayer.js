@@ -4,6 +4,7 @@ export default class remotePlayer {
 	constructor(
 		scene, player
 	) {
+		console.log('add remote')
 		this.player = player;
 		this.scene = scene;
 		this.mesh = this.scene.soldier.createInstance(player._id);
@@ -68,6 +69,6 @@ export default class remotePlayer {
 	}
 
 	Destroy() {
-
+		this.mesh.dispose()
 	}
 }

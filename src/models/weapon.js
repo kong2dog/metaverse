@@ -9,7 +9,7 @@ export default class Weapon {
     wp.isVisible = true;
     wp.rotationQuaternion = null;
     wp.parent = parent;
-    wp.position = new BABYLON.Vector3(-0.2,-1.2,0); 
+    wp.position = new BABYLON.Vector3(-0.2,-1.2,2); 
    // wp.rotation.x = -Math.PI/2;
     wp.rotation.y = -Math.PI / 2;
     this.mesh = wp;

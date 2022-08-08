@@ -1,5 +1,5 @@
 import LocalPlayer from "../models/localPlayer.js";
-const ws = new WebSocket('ws://127.0.0.1:9988')
+const ws = new WebSocket('ws://localhost:9988')
 import RemotePlayer from "../models/remotePlayer.js";
 import Player from '../models/Player.js';
 export default class Controller {
@@ -21,9 +21,6 @@ export default class Controller {
     socketOpen() {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
-        console.log(params.id)
-        console.log('connected');
-        this.client.send('hello')
         const data = {
             cmd: 'setId',
             id: params.id
@@ -44,6 +41,7 @@ export default class Controller {
             }else if(data.cmd === 'new player'){
                 this.onNewPlayer(data)
             }else if(data.cmd === 'init game'){
+                console.log(data)
                 this.onInitGame(data);
             }else if(data.cmd === 'move player'){
                 console.log(data)
@@ -171,13 +169,17 @@ export default class Controller {
 
     removeRemotePlayer(id) {
         const player = this._findPlayer(id)
+        console.log(id)
         if(!player) throw new Error("Player not found " + id);
+        player.Destroy();
         this.store.state.remotePlayers.splice(this.store.state.remotePlayers.indexOf(player), 1)
+        console.log(this.store)
     }
 
     addRemotePlayer(player) {
         const p = this.clonePlayer(player);
         const remotePlayer = new RemotePlayer(this.scene, p)
+        console.log(remotePlayer)
         this.store.state.remotePlayers.push(remotePlayer);
     }
 

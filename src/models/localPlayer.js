@@ -9,8 +9,8 @@ export default class LocalPlayer {
 		
 		this.cameraSpeed = 0.6;
 		this.jumpHeight = 2.5;
-		// this.mesh = this.scene.soldier;
-		// this.mesh.isVisible = true;
+		this.mesh = this.scene.soldier;
+		this.mesh.isVisible = true;
 		this.jumpUp = false;
 		this.isJumping = false;
 		this.scene.camera.speed = this.cameraSpeed;
@@ -142,6 +142,8 @@ export default class LocalPlayer {
 
 	submitMovement() {
 		console.log('sub')
+		this.mesh.position = new BABYLON.Vector3(this.scene.camera.position.x, this.scene.camera.position.y, this.scene.camera.position.z);
+		this.mesh.rotation.y = this.scene.camera.rotation.y;
 		this.scene.controller.sendLocalPlayerMovement(this.scene.camera.position, this.scene.camera.rotation);
     this.lastPosition = new BABYLON.Vector3(this.scene.camera.position.x , this.scene.camera.position.y , this.scene.camera.position.z);
     this.lastRotation = new BABYLON.Vector3(this.scene.camera.rotation.x , this.scene.camera.rotation.y , this.scene.camera.rotation.z);

@@ -26,8 +26,13 @@ const wss = new WebSocketServer({
 		// should not be compressed if context takeover is disabled.
 	}
 })
-
+function heartbeat() {
+	console.log(this.id)
+  this.isAlive = true;
+}
 wss.on('connection', function connection(wsclient) {
+	wsclient.isAlive = true;
+  wsclient.on('pong', heartbeat);
 	wsclient.on('message', (bu) => {
 		console.log(bu.toString())
 		let data 
@@ -60,6 +65,9 @@ wss.on('connection', function connection(wsclient) {
 			onClientSentMsg(data)
 		}
 	});
+	wsclient.on('close', () => {
+		onClientDisconnect(wsclient)
+	})
 });
 
 function onSetUserName(wsclient, data) {
@@ -104,7 +112,9 @@ function onClientRequestInit(wsclient, data) {
   wsclient.send(JSON.stringify({cmd: 'init game', localPlayer: clientPlayer , remotePlayers : remotePlayers }));
   // Tell all current players, there is a new player
 	wss.clients.forEach((client) => {
-		if (client !== ws && client.readyState === WebSocket.OPEN) {
+		console.log(client.id)
+		console.log(wsclient.id)
+		if (client !== wsclient && client.readyState === WebSocket.OPEN) {
 			client.send(JSON.stringify({cmd: 'new player', player: clientPlayer}, { binary: false }));
 		}
 	});
@@ -122,8 +132,8 @@ function onClientDisconnect(wsclient) {
 	players.splice(players.indexOf(removePlayer), 1);
 	// Broadcast removed player to connected socket clients
 	wss.clients.forEach((client) => {
-		if (client !== wsclient && client.readyState === WebSocket.OPEN) {
-			client.send({cmd: 'remove player', player: clientPlayer}, { binary: false });
+		if (client.id !== wsclient.id && client.readyState === WebSocket.OPEN) {
+			client.send(JSON.stringify({cmd: 'remove player', id: wsclient.id}, { binary: false }));
 		}
 	});
 }
@@ -237,3 +247,21 @@ function playerById(id) {
 	}
 	return false;
 }
+
+const interval = setInterval(()=> {
+  wss.clients.forEach((ws) => {
+		console.log('check' + ws.id)
+		console.log('check' + ws.isAlive)
+    if (ws.isAlive === false) {
+			console.log('dis' + ws.id)
+			onClientDisconnect(ws)
+			return;
+		}
+		
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 3000);
+wss.on('close', function close() {
+  console.log('closeserver')
+});
