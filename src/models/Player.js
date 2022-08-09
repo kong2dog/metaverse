@@ -39,6 +39,10 @@ export default class Player {
 		this._z = z;
 	}
 
+	getXYZ() {
+		return {x : this._x, y : this._y , z : this._z};
+	}
+
 	setRotXYZ(x, y, z) {
 		this._rotX = x;
 		this._rotY = y;

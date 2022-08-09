@@ -219,12 +219,12 @@ function onPlayerSuicide(){
 	}
 }
 
-function onShotFired(){
-	const shooter = playerById(this.id);
+function onShotFired(data){
+	const shooter = playerById(data.id);
 	const position = shooter.getXYZ(); 
 	wss.clients.forEach((client) => {
-		if (client.readyState === WebSocket.OPEN) {
-			client.send({cmd: 'shot fired', pos: position });
+		if (+client.id !== +data.id && client.readyState === WebSocket.OPEN) {
+			client.send(JSON.stringify({cmd: 'shot fired', pos: position }));
 		}
 	});
 }

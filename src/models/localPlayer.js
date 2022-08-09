@@ -30,6 +30,7 @@ export default class LocalPlayer {
 
 	Update() {
 		this.updatePosition()
+		this.checkControls();
 	}
 	setColor(r,g,b) {
 		this.player._color = {
@@ -86,10 +87,12 @@ export default class LocalPlayer {
 		window.addEventListener('keydown', (event) => {
 			this.onKeyDown(event)
 		}, false);
-		window.addEventListener('mouseup', (event) => {
+		window.addEventListener('pointerup', (event) => {
+			event.keyCode = event.pointerId;
 			this.onKeyUp(event)
 		}, false)
-		window.addEventListener('mousedown', (event) => {
+		window.addEventListener('pointerdown', (event) => {
+			event.keyCode = event.pointerId;
 			this.onKeyDown(event);
 		}, false)
 	}
@@ -109,6 +112,7 @@ export default class LocalPlayer {
 	}
 
 	onKeyDown(event) {
+		console.log(event)
 		this.scene.store.onKeyDown(event)
 	}
 
@@ -155,6 +159,14 @@ export default class LocalPlayer {
 				this.jump()
 			}
 		}
+		if(this.scene.store.isDown(this.scene.store.state.FIRE)){
+			if(!this.player.isDead())
+					this.weapon.fire();
+		}
+	}
+
+	jump() {
+
 	}
 
 	checkFreeFall(){

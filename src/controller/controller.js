@@ -76,11 +76,17 @@ export default class Controller {
     }
 
     onShotFired(data) {
-        this.showFired(data.pos)
+        const pos = data.pos;
+        this.scene.sound.gunFire3D(new BABYLON.Vector3(pos.x , pos.y , pos.z));
     }
 
-    shotFired(pos) {
+    shotFired() {
         // 播放声音
+        const data = {
+            cmd: 'player fired shot',
+            id: this.store.state.localPlayer.player._id
+        }
+        this.client.send(JSON.stringify(data))
     }
 
     onRespawnPlayer(data) {

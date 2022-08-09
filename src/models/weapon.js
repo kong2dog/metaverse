@@ -47,6 +47,7 @@ export default class Weapon {
   fire() {
     if(this.canFire){
       if(this.currentAmmo != 0){
+        this.scene.sound.gunFire();
         const width = this.scene.engine.getRenderWidth();
         const height = this.scene.engine.getRenderHeight();
         const pickResult = this.scene.Scene.pick(width/2, height/2, null, false, this.scene.camera);
@@ -57,12 +58,12 @@ export default class Weapon {
             }
           }
           if(pickResult.pickedMesh.name != 'skyBox'){
-            this.drawImpact(pickResult.pickedPoint);
+            // this.drawImpact(pickResult.pickedPoint);
           }
         }
-        this.scene.controller.sendShotFired();
+        this.scene.controller.shotFired();
         this.currentAmmo -= 1;
-
+        
       }else{
         // 空枪
       }
@@ -102,7 +103,7 @@ export default class Weapon {
     // Link the animation to the mesh
     this.mesh.animations.push(display);
 
-    this.render.scene.beginAnimation(this.mesh, 0, 100, false, 10, function() {
+    this.scene.Scene.beginAnimation(this.mesh, 0, 100, false, 10, function() {
 
     });
   }

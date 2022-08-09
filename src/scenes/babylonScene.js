@@ -2,6 +2,7 @@ import * as BABYLON from '@babylonjs/core';
 import 'babylonjs-loaders'
 
 import Controller from '../controller/controller.js'
+import Sound from '../controller/sound.js';
 import initData from '../store/initData.js';
 export default class BabylonScene {
 	constructor(
@@ -14,6 +15,7 @@ export default class BabylonScene {
 		this.engine = engine;
 		this.Scene =  new BABYLON.Scene(engine);
 		this.controller = new Controller(this);
+		this.sound = new Sound(this.Scene);
 	}
 
 	Create() {
