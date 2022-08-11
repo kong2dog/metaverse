@@ -67,6 +67,10 @@ export default class Player {
 		this._hitPoints = h;
 	}
 
+	getHitPoints() {
+    return this._hitPoints;
+	}
+
 	isDead() {
 		return this._isDead;
 	}

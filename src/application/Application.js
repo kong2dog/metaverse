@@ -40,11 +40,14 @@ export default class Application {
         // console.log(this.dom.clientWidth);
         const width = this.dom.clientWidth || window.innerWidth;
         const height = this.dom.clientHeight || window.innerHeight;
+        console.log(width)
+        
         this.canvas.width = width;
         this.canvas.height = height;
         this.dom.appendChild(this.canvas);
         this.engine = new BABYLON.Engine(this.canvas, true, {preserveDrawingBuffer: true, stencil: true}, true);
-
+        const width2 = this.engine.getRenderWidth();
+        console.log(width2)
         this.stats = new Stats();
         // this.dom.appendChild(this.stats.domElement);
         this.scene = new BabylonScene(this.engine, this.canvas, this.store);

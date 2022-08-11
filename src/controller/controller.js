@@ -28,6 +28,16 @@ export default class Controller {
         this.client.send(JSON.stringify(data))
     }
 
+    hitPlayer(player) {
+        console.log(player._id)
+        const data = {
+            cmd: 'hit player',
+            shooterId: this.store.state.localPlayer.player._id,
+            id: player._id
+        }
+        this.client.send(JSON.stringify(data));
+    }
+
     onStartRender() {
         this.store.setState('gameStarted', true)
     }
@@ -44,7 +54,6 @@ export default class Controller {
                 console.log(data)
                 this.onInitGame(data);
             }else if(data.cmd === 'move player'){
-                console.log(data)
                 this.onMovePlayer(data);
             }else if(data.cmd === 'remove player'){
                 this.onRemovePlayer(data);
@@ -175,17 +184,14 @@ export default class Controller {
 
     removeRemotePlayer(id) {
         const player = this._findPlayer(id)
-        console.log(id)
         if(!player) throw new Error("Player not found " + id);
         player.Destroy();
         this.store.state.remotePlayers.splice(this.store.state.remotePlayers.indexOf(player), 1)
-        console.log(this.store)
     }
 
     addRemotePlayer(player) {
         const p = this.clonePlayer(player);
         const remotePlayer = new RemotePlayer(this.scene, p)
-        console.log(remotePlayer)
         this.store.state.remotePlayers.push(remotePlayer);
     }
 
@@ -194,9 +200,7 @@ export default class Controller {
     }
 
     movePlayer(id, pos, rot) {
-        console.log(id)
         const player = this._findPlayer(id);
-        console.log(player)
         if(!player) return;
         player.move(pos, rot)
         player.player.setXYZ(pos.x, pos.y, pos.z);

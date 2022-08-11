@@ -48,21 +48,24 @@ export default class Weapon {
     if(this.canFire){
       if(this.currentAmmo != 0){
         this.scene.sound.gunFire();
-        const width = this.scene.engine.getRenderWidth();
-        const height = this.scene.engine.getRenderHeight();
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        console.log(width)
+        console.log(height)
         const pickResult = this.scene.Scene.pick(width/2, height/2, null, false, this.scene.camera);
         if(pickResult.pickedMesh){
+          console.log(pickResult.pickedMesh.name)
           for(let i = 0; i < this.scene.store.state.remotePlayers.length; i++) {
             if(pickResult.pickedMesh.name === this.scene.store.state.remotePlayers[i].player._id){
               this.scene.controller.hitPlayer(this.scene.store.state.remotePlayers[i].player)
             }
           }
           if(pickResult.pickedMesh.name != 'skyBox'){
-            // this.drawImpact(pickResult.pickedPoint);
+            this.drawImpact(pickResult.pickedPoint);
           }
         }
         this.scene.controller.shotFired();
-        this.currentAmmo -= 1;
+        // this.currentAmmo -= 1;
         
       }else{
         // 空枪

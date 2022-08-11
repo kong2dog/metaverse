@@ -8,6 +8,7 @@ export default class remotePlayer {
 		this.player = player;
 		this.scene = scene;
 		this.mesh = this.scene.soldier.createInstance(player._id);
+		this.mesh.name = player._id
 		this.mesh.position.x = player._x;
 		this.mesh.position.y = player._y;
 		this.mesh.position.z = player._z;

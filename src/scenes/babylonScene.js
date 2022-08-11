@@ -100,7 +100,7 @@ export default class BabylonScene {
 	}
 
 	loadSolider() {
-		const soldier = new BABYLON.MeshBuilder.CreateBox("crate1", {size: 8}, this.Scene);
+		const soldier = new BABYLON.MeshBuilder.CreateBox("soldier", {size: 8}, this.Scene);
     console.log(soldier)
 		soldier.material = new BABYLON.StandardMaterial("Mat1", this.Scene);
     soldier.material.diffuseColor = new BABYLON.Color3(0, 0, 1);

@@ -159,7 +159,7 @@ function onUpdatePosition(wsclient, data) {
 
 function onPlayerHit(data) {
 	const hitPlayer = playerById(data.id);
-  const shooter = playerById(this.id);
+  const shooter = playerById(data.shooterId);
     
 	// Player not found
 	if (!hitPlayer || !shooter) {
@@ -180,14 +180,24 @@ function onPlayerHit(data) {
 		//Send all players that this player is dead (plus the sender itself, thast why no broadcast is used)
 		wss.clients.forEach((client) => {
 			if (client !== this && client.readyState === WebSocket.OPEN) {
-				client.send({cmd: 'player dead', id : data.id, killer: this.id});
+				client.send(JSON.stringify({
+					cmd: 'player dead', 
+					id : data.id, 
+					killer: data.shooterId
+				}));
 			}
 		});
 	} else{
       //Send player his new hitpoints
-			wss.clients.find(c => c.id === data.id).send({
-				cmd: 'update hitpoints',
-				hitPoints : hitPlayer.getHitPoints() 
+			wss.clients.forEach((client) => {
+				if(+client.id === +data.id) {
+					client.send(
+						JSON.stringify({
+							cmd: 'update hitpoints',
+							hitPoints : hitPlayer.getHitPoints() 
+						})
+					)
+				}
 			})
     }
 }

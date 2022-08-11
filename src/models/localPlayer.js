@@ -10,7 +10,8 @@ export default class LocalPlayer {
 		this.cameraSpeed = 0.6;
 		this.jumpHeight = 2.5;
 		this.mesh = this.scene.soldier;
-		this.mesh.isVisible = true;
+		this.mesh.name = player._id
+		this.mesh.isVisible = false;
 		this.jumpUp = false;
 		this.isJumping = false;
 		this.scene.camera.speed = this.cameraSpeed;
@@ -66,6 +67,7 @@ export default class LocalPlayer {
 		if(h > 100) h = 100;
 		else if(h < 0) h = 0;
 		this.player._hitPoints = h;
+		Pannel.updateHealthBar(this.player.getHitPoints());
 	}
 
 	isDead() {
