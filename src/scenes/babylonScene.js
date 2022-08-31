@@ -1,6 +1,6 @@
 import * as BABYLON from '@babylonjs/core';
 import 'babylonjs-loaders'
-
+import PlayerMod from '../models/playerMod.js';
 import Controller from '../controller/controller.js'
 import Sound from '../controller/sound.js';
 import initData from '../store/initData.js';
@@ -24,7 +24,7 @@ export default class BabylonScene {
 		this.loadPhysics();
 		this.initSky();
 		this.loadGround();
-		this.loadBoxes();
+		// this.loadBoxes();
 		this.loadGun().then(() => {
 			this.loadSolider()
 			this.controller.requestAllPlayers()
@@ -32,8 +32,8 @@ export default class BabylonScene {
 	}
 
 	initCamera() {
-		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 1, 0), this.Scene);
-		this.camera.setTarget(new BABYLON.Vector3(3, 0, 0))
+		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 1, 7), this.Scene);
+		this.camera.setTarget(new BABYLON.Vector3(0, 0, -1))
 		this.camera.attachControl(this.canvas, false);
 		this.Scene.activeCameras.push(this.camera)
 		// this.camera2 = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(10, 1, 0), this.Scene);
@@ -106,7 +106,49 @@ export default class BabylonScene {
     soldier.material.diffuseColor = new BABYLON.Color3(0, 0, 1);
 		this.soldier = soldier;
 		this.soldier.isVisible = false;
-		this.soldier.position = new BABYLON.Vector3(0, 0, 0); 
+		this.soldier.position = new BABYLON.Vector3(0, 0, 0);
+		const p = new PlayerMod(this.Scene);
+		this.showAxis(10);
+		p.loadGun().then(() => {
+			p.createPlayer();
+			p.holdGun();
+			p.run()
+		})
+	}
+	showAxis(size) {
+			const makeTextPlane = (text, color, size) => {
+				let dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, this.Scene, true);
+				dynamicTexture.hasAlpha = true;
+				dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
+				const plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, this.Scene, true);
+				plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", this.Scene);
+				plane.material.backFaceCulling = false;
+				plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+				plane.material.diffuseTexture = dynamicTexture;
+				return plane;
+			};
+		
+			const axisX = BABYLON.Mesh.CreateLines("axisX", [ 
+				new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+				new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+				], this.Scene);
+			axisX.color = new BABYLON.Color3(1, 0, 0);
+			const xChar = makeTextPlane("X", "red", size / 10);
+			xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+			const axisY = BABYLON.Mesh.CreateLines("axisY", [
+					new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0), 
+					new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
+					], this.Scene);
+			axisY.color = new BABYLON.Color3(0, 1, 0);
+			const yChar = makeTextPlane("Y", "green", size / 10);
+			yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+			const axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+					new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+					new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+					], this.Scene);
+			axisZ.color = new BABYLON.Color3(0, 0, 1);
+			const zChar = makeTextPlane("Z", "blue", size / 10);
+			zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
 	}
 
 	loadPhysics() {
@@ -148,15 +190,15 @@ export default class BabylonScene {
 	}
 
 	loadLight() {
-		this.lightHem = new BABYLON.HemisphericLight("lightHem", new BABYLON.Vector3(0, 100, 0), this.Scene);
-    this.lightHem.intensity = 0.4;
-		this.lightDir = new BABYLON.DirectionalLight("lightDir", new BABYLON.Vector3(-2, -4, 2), this.Scene);    
+		this.lightHem = new BABYLON.HemisphericLight("lightHem", new BABYLON.Vector3(0, 0, 0), this.Scene);
+    this.lightHem.intensity = 0.8;
+		this.lightDir = new BABYLON.DirectionalLight("lightDir", new BABYLON.Vector3(2, 4, 2), this.Scene);    
 		this.lightDir.diffuse = new BABYLON.Color3(1, 1, 1);	
 		this.lightDir.specular = new BABYLON.Color3(0, 0, 0);
 		this.lightDir.position = new BABYLON.Vector3(250, 400, 0);
     this.lightDir.intensity = 1.8;
 		this.shadowGenerator = new BABYLON.ShadowGenerator(4192, this.lightDir);
-    this.shadowGenerator.useVarianceShadowMap = true; 
+    this.shadowGenerator.useVarianceShadowMap = false; 
 	}
 
 	Update() {
