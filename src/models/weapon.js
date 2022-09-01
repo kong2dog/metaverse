@@ -9,8 +9,9 @@ export default class Weapon {
     wp.isVisible = true;
     wp.rotationQuaternion = null;
     wp.parent = parent;
-    wp.position = new BABYLON.Vector3(-0.2,-1.2,2); 
-   // wp.rotation.x = -Math.PI/2;
+    // wp.position = new BABYLON.Vector3(-0.2, 0 ,2); 
+    wp.locallyTranslate(new BABYLON.Vector3(-0.5, -0.8, -1.8));
+    // wp.rotation.x = -Math.PI/2;
     wp.rotation.y = -Math.PI / 2;
     this.mesh = wp;
     this._initialRotation = this.mesh.rotation.clone();
@@ -61,7 +62,7 @@ export default class Weapon {
             }
           }
           if(pickResult.pickedMesh.name != 'skyBox'){
-            this.drawImpact(pickResult.pickedPoint);
+            // this.drawImpact(pickResult.pickedPoint);
           }
         }
         this.scene.controller.shotFired();

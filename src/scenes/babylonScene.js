@@ -27,12 +27,11 @@ export default class BabylonScene {
 		// this.loadBoxes();
 		this.loadGun().then(() => {
 			this.loadSolider()
-			this.controller.requestAllPlayers()
 		})
 	}
 
 	initCamera() {
-		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 1, 7), this.Scene);
+		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 1.5, 7), this.Scene);
 		this.camera.setTarget(new BABYLON.Vector3(0, 0, -1))
 		this.camera.attachControl(this.canvas, false);
 		this.Scene.activeCameras.push(this.camera)
@@ -100,20 +99,13 @@ export default class BabylonScene {
 	}
 
 	loadSolider() {
-		const soldier = new BABYLON.MeshBuilder.CreateBox("soldier", {size: 8}, this.Scene);
-    console.log(soldier)
-		soldier.material = new BABYLON.StandardMaterial("Mat1", this.Scene);
-    soldier.material.diffuseColor = new BABYLON.Color3(0, 0, 1);
-		this.soldier = soldier;
-		this.soldier.isVisible = false;
-		this.soldier.position = new BABYLON.Vector3(0, 0, 0);
 		const p = new PlayerMod(this.Scene);
 		this.showAxis(10);
-		p.loadGun().then(() => {
-			p.createPlayer();
-			p.holdGun();
-			p.run()
-		})
+		p.createPlayer();
+		p.holdGun();
+		p.run()
+		this.soldier = p;
+		this.controller.requestAllPlayers()
 	}
 	showAxis(size) {
 			const makeTextPlane = (text, color, size) => {
@@ -175,7 +167,7 @@ export default class BabylonScene {
     //this.box.position.y = this.render.terrain.calcElevation(5, 10) + 5;
     
     for (var i = 0; i < initData.boxSize; i++) {
-        const clone = box.createInstance("box"+i);
+        const clone = box.createInstance("box" + i);
         clone.type = 'box';
         clone.position.x = initData.boxPosition[i*2]; 
         clone.position.z = initData.boxPosition[i*2 + 1];

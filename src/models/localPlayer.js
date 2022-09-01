@@ -11,7 +11,7 @@ export default class LocalPlayer {
 		this.jumpHeight = 2.5;
 		this.mesh = this.scene.soldier;
 		this.mesh.name = player._id
-		this.mesh.isVisible = false;
+		this.mesh.player.setEnabled(true);
 		this.jumpUp = false;
 		this.isJumping = false;
 		this.scene.camera.speed = this.cameraSpeed;
@@ -26,7 +26,7 @@ export default class LocalPlayer {
 		this.lastRotation = new BABYLON.Vector3(this.scene.camera.rotation.x, this.scene.camera.rotation.y, this.scene.camera.rotation.z)
 		
 		this.bindEvent()
-		this.weapon = new Weapon(scene, player, scene.camera)
+		this.weapon = new Weapon(scene, player, this.mesh.player)
 	}
 
 	Update() {
@@ -102,8 +102,9 @@ export default class LocalPlayer {
 	initPhysics() {
 		this.scene.camera.checkCollisions = true;
 		this.scene.camera.useOctreeForCollisions = true;
-		this.scene.camera.applyGravity = true;
-		this.scene.camera.ellipsoid = new BABYLON.Vector3(3.2,1,1)
+		this.scene.camera.applyGravity = false;
+		this.scene.camera.ellipsoid = new BABYLON.Vector3(1,2,1)
+		// this.scene.camera.ellipsoidOffset = new BABYLON.Vector3(0,2,0)
 	}
 
 	Create() {
@@ -125,7 +126,7 @@ export default class LocalPlayer {
 
 	resetCameraCoordinates() {
 		this.scene.camera.position.x = this.player._x;
-		this.scene.camera.position.y = this.player._y;
+		this.scene.camera.position.y = this.player._y + 1;
 		this.scene.camera.position.z = this.player._z;
 	}
 
@@ -148,10 +149,11 @@ export default class LocalPlayer {
 
 	submitMovement() {
 		console.log('sub')
-		this.mesh.position = new BABYLON.Vector3(this.scene.camera.position.x, this.scene.camera.position.y, this.scene.camera.position.z);
-		this.mesh.rotation.y = this.scene.camera.rotation.y;
+		this.mesh.run();
+		this.mesh.player.position = new BABYLON.Vector3(this.scene.camera.position.x - 0.3, this.scene.camera.position.y - 0.5, this.scene.camera.position.z);
+		this.mesh.player.rotation.y = this.scene.camera.rotation.y;
 		this.scene.controller.sendLocalPlayerMovement(this.scene.camera.position, this.scene.camera.rotation);
-    this.lastPosition = new BABYLON.Vector3(this.scene.camera.position.x , this.scene.camera.position.y , this.scene.camera.position.z);
+    this.lastPosition = new BABYLON.Vector3(this.scene.camera.position.x - 0.3, this.scene.camera.position.y -0.5, this.scene.camera.position.z);
     this.lastRotation = new BABYLON.Vector3(this.scene.camera.rotation.x , this.scene.camera.rotation.y , this.scene.camera.rotation.z);
 	}
 

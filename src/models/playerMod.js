@@ -20,15 +20,16 @@ export default class PlayerMod {
   createPlayer() {
 
     this.player = new BABYLON.TransformNode("pivot");
-		this.gun.parent = this.player;
-		this.gun.rotation.y = -Math.PI / 2;
-		this.gun.isVisible = true;
-		this.gun.position.z -= 2;
-		this.gun.position.x -= 0.5;
-		this.gun.position.y -= 1;
+		this.player.setEnabled(false);
+		// this.gun.parent = this.player;
+		// this.gun.rotation.y = -Math.PI / 2;
+		// this.gun.setEnabled(false);
+		// this.gun.position.z -= 2;
+		// this.gun.position.x -= 0.5;
+		// this.gun.position.y -= 1;
 		const CoTAxis = this.localAxes(2, 0);
 		CoTAxis.parent = this.player;
-		this.player.position = new BABYLON.Vector3(0, 1, 0);
+		this.player.position = new BABYLON.Vector3(0, 0.1, 0);
 		
 		const faceColors = [];
 		// faceColors[0] = BABYLON.Color3.Blue();
@@ -223,6 +224,7 @@ export default class PlayerMod {
 		pilot_local_axisY.parent = local_origin;
 		pilot_local_axisZ.parent = local_origin; 
 
+		this.player.position.y = 0;
 		return local_origin;
 	}
 
@@ -286,4 +288,9 @@ export default class PlayerMod {
     run.normalize(0, 2 * frameRate);
     run.play(true);
   }
+
+	clone() {
+		this.player = this.player.clone();
+		return this;
+	}
 }

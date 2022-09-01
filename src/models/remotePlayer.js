@@ -1,22 +1,25 @@
 import * as BABYLON from '@babylonjs/core';
 import Weapon from './weapon.js'
+import PlayerMod from './playerMod.js';
 export default class remotePlayer {
 	constructor(
 		scene, player
 	) {
 		console.log('add remote')
 		this.player = player;
+		const p = new PlayerMod(scene.Scene);
+		p.createPlayer();
+		p.holdGun();
 		this.scene = scene;
-		this.mesh = this.scene.soldier.createInstance(player._id);
-		this.mesh.name = player._id
-		this.mesh.position.x = player._x;
-		this.mesh.position.y = player._y;
-		this.mesh.position.z = player._z;
-		this.mesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-		this.scene.shadowGenerator.getShadowMap().renderList.push(this.mesh);
-		this.weapon = new Weapon(scene, player, this.mesh)
-		this.weapon.parent = this.mesh;
-		this.mesh.checkCollisions = true;
+		this.mesh = p;
+		this.mesh.player.setEnabled(true);
+		this.mesh.player.name = player._id
+		this.mesh.player.position.x = player._x;
+		this.mesh.player.position.y = player._y;
+		this.mesh.player.position.z = player._z;
+		// this.scene.shadowGenerator.getShadowMap().renderList.push(this.mesh.player);
+		this.weapon = new Weapon(scene, player, this.mesh.player)
+		// this.mesh.player.checkCollisions = true;
 	}
 
 	Update() {
@@ -34,8 +37,9 @@ export default class remotePlayer {
 	move(pos, rot) {
 		console.log('move')
 		console.log(pos)
-		this.mesh.position = new BABYLON.Vector3(pos.x, pos.y, pos.z);
-		this.mesh.rotation.y = rot.y;
+		this.mesh.player.position = new BABYLON.Vector3(pos.x, pos.y, pos.z);
+		this.mesh.player.rotation.y = rot.y;
+		this.mesh.run();
 	}
 
 	gotKilled(killer){
@@ -70,6 +74,6 @@ export default class remotePlayer {
 	}
 
 	Destroy() {
-		this.mesh.dispose()
+		this.mesh.player.dispose()
 	}
 }
