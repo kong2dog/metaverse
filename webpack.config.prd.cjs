@@ -70,7 +70,11 @@ module.exports = {
             filename: 'index.html',
             inject: 'body'
         }),
-
+        new CopyWebpackPlugin([{
+            from: path.resolve(__dirname, './static'),
+            to: path.resolve(__dirname, './dist'),
+            ignore: ['.*']
+        }]),
         // webpack-dev-server enhancement plugins
         new webpack.HotModuleReplacementPlugin()
     ],
