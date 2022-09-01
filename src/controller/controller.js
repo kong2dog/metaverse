@@ -1,5 +1,5 @@
 import LocalPlayer from "../models/localPlayer.js";
-const ws = new WebSocket('ws://localhost:9988')
+const ws = new WebSocket('ws://49.234.96.253:9988')
 import RemotePlayer from "../models/remotePlayer.js";
 import Player from '../models/Player.js';
 export default class Controller {
