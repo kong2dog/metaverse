@@ -36,6 +36,12 @@ task :environment do
   # invoke :'rvm:use[ruby-1.9.3-p125@default]'
 end
 
+task :setup do
+  # command %{rbenv install 2.5.3 --skip-existing}
+  # command %{rvm install ruby-2.5.3}
+  # command %{gem install bundler}
+end
+
 desc "Deploys the current version to the server."
 task :deploy => :environment do
   deploy do
