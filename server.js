@@ -1,6 +1,6 @@
 import ws, {WebSocketServer, WebSocket} from 'ws'
 import util from 'util'
-import Player from '../models/Player.js'
+import Player from './src/models/Player.js'
 const players = [];
 const spread = 400;
 
@@ -27,14 +27,12 @@ const wss = new WebSocketServer({
 	}
 })
 function heartbeat() {
-	console.log(this.id)
   this.isAlive = true;
 }
 wss.on('connection', function connection(wsclient) {
 	wsclient.isAlive = true;
   wsclient.on('pong', heartbeat);
 	wsclient.on('message', (bu) => {
-		console.log(bu.toString())
 		let data 
 		try{
 			data = JSON.parse(bu.toString())
@@ -140,7 +138,6 @@ function onClientDisconnect(wsclient) {
 }
 
 function onUpdatePosition(wsclient, data) {
-	console.log(data)
 	const movedPlayer = playerById(wsclient.id);
 	// Player not found
 	if (!movedPlayer) {
@@ -261,10 +258,7 @@ function playerById(id) {
 
 const interval = setInterval(()=> {
   wss.clients.forEach((ws) => {
-		console.log('check' + ws.id)
-		console.log('check' + ws.isAlive)
     if (ws.isAlive === false) {
-			console.log('dis' + ws.id)
 			onClientDisconnect(ws)
 			return;
 		}

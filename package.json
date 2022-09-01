@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --mode=development --config webpack.config.dev.cjs",
-    "build": "webpack --profile --progress --mode=production --config webpack.config.prd.js"
+    "build": "webpack --profile --progress --mode=production --config webpack.config.prd.cjs"
   },
   "repository": {
     "type": "git",

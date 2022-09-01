@@ -27,8 +27,8 @@ export default class PlayerMod {
 		// this.gun.position.z -= 2;
 		// this.gun.position.x -= 0.5;
 		// this.gun.position.y -= 1;
-		const CoTAxis = this.localAxes(2, 0);
-		CoTAxis.parent = this.player;
+		// const CoTAxis = this.localAxes(2, 0);
+		// CoTAxis.parent = this.player;
 		this.player.position = new BABYLON.Vector3(0, 0.1, 0);
 		
 		const faceColors = [];

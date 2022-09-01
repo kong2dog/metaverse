@@ -102,7 +102,7 @@ export default class LocalPlayer {
 	initPhysics() {
 		this.scene.camera.checkCollisions = true;
 		this.scene.camera.useOctreeForCollisions = true;
-		this.scene.camera.applyGravity = false;
+		this.scene.camera.applyGravity = true;
 		this.scene.camera.ellipsoid = new BABYLON.Vector3(1,2,1)
 		// this.scene.camera.ellipsoidOffset = new BABYLON.Vector3(0,2,0)
 	}
@@ -152,6 +152,7 @@ export default class LocalPlayer {
 		this.mesh.run();
 		this.mesh.player.position = new BABYLON.Vector3(this.scene.camera.position.x - 0.3, this.scene.camera.position.y - 0.5, this.scene.camera.position.z);
 		this.mesh.player.rotation.y = this.scene.camera.rotation.y;
+		this.mesh.player.rotation = this.scene.camera.rotation;
 		this.scene.controller.sendLocalPlayerMovement(this.scene.camera.position, this.scene.camera.rotation);
     this.lastPosition = new BABYLON.Vector3(this.scene.camera.position.x - 0.3, this.scene.camera.position.y -0.5, this.scene.camera.position.z);
     this.lastRotation = new BABYLON.Vector3(this.scene.camera.rotation.x , this.scene.camera.rotation.y , this.scene.camera.rotation.z);
