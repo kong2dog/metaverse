@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-
 const path = require('path');
 const fs = require('fs');
 const Dotenv = require('dotenv');
@@ -39,9 +38,10 @@ module.exports = {
             name: 'manifest'
         },
         splitChunks: {
-            chunks: 'async',
-            minSize: 200000,
-            minChunks: 1,
+            chunks: 'all',
+            minSize: 1000,
+            maxSize: 50000,
+            minChunks: 10,
             maxAsyncRequests: 10,
             maxInitialRequests: 5,
             automaticNameDelimiter: '~',
@@ -60,6 +60,12 @@ module.exports = {
         }
     },
     plugins: [
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 10
+        }),
+        new webpack.optimize.MinChunkSizePlugin({
+            minChunkSize: 10000 // Minimum number of characters
+        }),
         new webpack.DefinePlugin({
             'process.env': JSON.stringify(s)
         }),
@@ -74,9 +80,7 @@ module.exports = {
             from: path.resolve(__dirname, './static'),
             to: path.resolve(__dirname, './dist'),
             ignore: ['.*']
-        }]),
-        // webpack-dev-server enhancement plugins
-        new webpack.HotModuleReplacementPlugin()
+        }])
     ],
     module: {
         rules: [

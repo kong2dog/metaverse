@@ -1,4 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
 import Weapon from './weapon.js';
 export default class LocalPlayer {
 	constructor(

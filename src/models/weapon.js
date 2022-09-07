@@ -1,10 +1,8 @@
-import * as BABYLON from '@babylonjs/core';
-
 export default class Weapon {
   constructor(scene, player, parent) {
     this.scene = scene;
     this.player = player;
-    const wp = this.scene.gun[0].createInstance(player._id);
+    const wp = this.scene.gun.createInstance(player._id);
     console.log(wp)
     wp.isVisible = true;
     wp.rotationQuaternion = null;

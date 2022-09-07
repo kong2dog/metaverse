@@ -1,6 +1,5 @@
 import Stats from 'stats.js';
 import Store from '../store/Store.js';
-import * as BABYLON from '@babylonjs/core';
 import BabylonScene from '../scenes/babylonScene.js';
 export default class Application {
     constructor({

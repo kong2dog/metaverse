@@ -1,5 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
-
 export default class PlayerMod {
   constructor(scene) {
     this.Scene = scene;
@@ -59,11 +57,11 @@ export default class PlayerMod {
 				colors[4 * vertex + 3] = 1;
 		}
 		this.head.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
-		// head.setPivotMatrix(new BABYLON.Matrix.Translation(0, -0.4, 0))
+		// head.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.4, 0))
 		this.head.locallyTranslate(new BABYLON.Vector3(0, 0.4, 0));;
 
 		const hair = new BABYLON.MeshBuilder.CreateBox("hair", {width: 1, height: 0.2}, this.Scene);
-		hair.setPivotMatrix(new BABYLON.Matrix.Translation(0, -0.1, 0))
+		hair.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.1, 0))
 		hair.parent = this.head;
 		hair.locallyTranslate(new BABYLON.Vector3(0, 0.5, 0));;
 		hair.material = new BABYLON.StandardMaterial("hairm", this.Scene);
@@ -88,7 +86,7 @@ export default class PlayerMod {
 		this.leftarm.material = new BABYLON.StandardMaterial("leftupperarmm", this.Scene);
 		this.leftarm.material.diffuseColor = new  BABYLON.Color3(0.2, 0.2, 0.2);
 		this.leftarm.parent = this.player;
-		this.leftarm.setPivotMatrix(new BABYLON.Matrix.Translation(0, -0.4, 0))
+		this.leftarm.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.4, 0))
 		this.leftarm.locallyTranslate(new BABYLON.Vector3(-0.9, -0.4, 0));
 
 		this.leftelbow = new BABYLON.MeshBuilder.CreateBox("leftelbow", {width:0.4, height: 0.2, depth: 0.4}, this.Scene);
@@ -101,7 +99,7 @@ export default class PlayerMod {
 		this.leftlowerarm.material = new BABYLON.StandardMaterial("leftlowerarmm", this.Scene);
 		this.leftlowerarm.material.diffuseColor = new  BABYLON.Color3(0.2, 0.2, 0.2);
 		this.leftlowerarm.parent = this.leftarm;
-		this.leftlowerarm.setPivotMatrix(new BABYLON.Matrix.Translation(0, -0.4, 0))
+		this.leftlowerarm.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.4, 0))
 		this.leftlowerarm.locallyTranslate(new BABYLON.Vector3(0, -0.8, 0));
 
 		const leftwaist = new BABYLON.MeshBuilder.CreateBox("leftwaist", {width:0.44, height: 0.1, depth: 0.44}, this.Scene);
@@ -120,7 +118,7 @@ export default class PlayerMod {
 		this.rihgtupperarm.material = new BABYLON.StandardMaterial("rihgtupperarmm", this.Scene);
 		this.rihgtupperarm.material.diffuseColor = new  BABYLON.Color3(0.2, 0.2, 0.2);
 		this.rihgtupperarm.parent = this.player;
-		this.rihgtupperarm.setPivotMatrix(new BABYLON.Matrix.Translation(0, -0.4, 0))
+		this.rihgtupperarm.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.4, 0))
 		this.rihgtupperarm.locallyTranslate(new BABYLON.Vector3(0.9, -0.4, 0));
 
 		const rihgtelbow = new BABYLON.MeshBuilder.CreateBox("rihgtelbow", {width:0.4, height: 0.2, depth: 0.4}, this.Scene);
@@ -133,7 +131,7 @@ export default class PlayerMod {
 		this.rihgtlowerarm.material = new BABYLON.StandardMaterial("rihgtlowerarmm", this.Scene);
 		this.rihgtlowerarm.material.diffuseColor = new  BABYLON.Color3(0.2, 0.2, 0.2);
 		this.rihgtlowerarm.parent = this.rihgtupperarm;
-		this.rihgtlowerarm.setPivotMatrix(new BABYLON.Matrix.Translation(0, -0.4, 0))
+		this.rihgtlowerarm.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.4, 0))
 		this.rihgtlowerarm.locallyTranslate(new BABYLON.Vector3(0, -0.8, 0));
 
 		const rihgtwaist = new BABYLON.MeshBuilder.CreateBox("rihgtwaist", {width:0.44, height: 0.1, depth: 0.44}, this.Scene);
@@ -152,7 +150,7 @@ export default class PlayerMod {
 		this.leftleg.material = new BABYLON.StandardMaterial("leftupperlegm", this.Scene);
 		this.leftleg.material.diffuseColor = new  BABYLON.Color3(0.2, 0.2, 0.2);
 		this.leftleg.parent = this.player;
-    this.leftleg.setPivotMatrix(new BABYLON.Matrix.Translation(0, -0.4, 0))
+    this.leftleg.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.4, 0))
 		this.leftleg.locallyTranslate(new BABYLON.Vector3(-0.26, -2, 0));
 
 		const leftkneel = new BABYLON.MeshBuilder.CreateBox("leftkneel", {width:0.5, height: 0.2, depth: 0.5}, this.Scene);

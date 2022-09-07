@@ -1,5 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
-import 'babylonjs-loaders'
 import PlayerMod from '../models/playerMod.js';
 import Controller from '../controller/controller.js'
 import Sound from '../controller/sound.js';
@@ -86,61 +84,25 @@ export default class BabylonScene {
 	}
 
 	async loadGun() {
-		return new Promise(resolve => {
-			window.BABYLON.SceneLoader.ImportMesh('', '/', "weapon_2.obj", this.Scene, (mesh) => {
-				this.gun = mesh;
-				this.gun[0].isVisible = false;
-				this.gun[0].material = new BABYLON.StandardMaterial("Mat", this.Scene);
-        this.gun[0].material.diffuseTexture = new BABYLON.Texture("/weapon_2.png", this.Scene);
-        this.gun[0].material.diffuseTexture.hasAlpha = true;  
-				resolve(mesh)
-			});
-		})
+			const mesh = await window.BABYLON.SceneLoader.ImportMeshAsync('', './', "weapon_2.obj", this.Scene);
+			console.log(mesh)
+			this.gun = mesh.meshes[0];
+			this.gun.isVisible = false;
+			this.gun.material = new BABYLON.StandardMaterial("Mat", this.Scene);
+			this.gun.material.diffuseTexture = new BABYLON.Texture("/weapon_2.png", this.Scene);
+			this.gun.material.diffuseTexture.hasAlpha = true; 
 	}
 
 	loadSolider() {
 		const p = new PlayerMod(this.Scene);
-		this.showAxis(10);
+		// this.showAxis(10);
 		p.createPlayer();
 		p.holdGun();
 		p.run()
 		this.soldier = p;
-		this.controller.requestAllPlayers()
-	}
-	showAxis(size) {
-			const makeTextPlane = (text, color, size) => {
-				let dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, this.Scene, true);
-				dynamicTexture.hasAlpha = true;
-				dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
-				const plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, this.Scene, true);
-				plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", this.Scene);
-				plane.material.backFaceCulling = false;
-				plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
-				plane.material.diffuseTexture = dynamicTexture;
-				return plane;
-			};
-		
-			const axisX = BABYLON.Mesh.CreateLines("axisX", [ 
-				new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
-				new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-				], this.Scene);
-			axisX.color = new BABYLON.Color3(1, 0, 0);
-			const xChar = makeTextPlane("X", "red", size / 10);
-			xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
-			const axisY = BABYLON.Mesh.CreateLines("axisY", [
-					new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0), 
-					new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
-					], this.Scene);
-			axisY.color = new BABYLON.Color3(0, 1, 0);
-			const yChar = makeTextPlane("Y", "green", size / 10);
-			yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
-			const axisZ = BABYLON.Mesh.CreateLines("axisZ", [
-					new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-					new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-					], this.Scene);
-			axisZ.color = new BABYLON.Color3(0, 0, 1);
-			const zChar = makeTextPlane("Z", "blue", size / 10);
-			zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+		setTimeout(() => {
+			this.controller.requestAllPlayers()
+		}, 5000);
 	}
 
 	loadPhysics() {
