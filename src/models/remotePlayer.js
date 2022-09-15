@@ -6,7 +6,7 @@ export default class remotePlayer {
 	) {
 		console.log('add remote')
 		this.player = player;
-		const p = new PlayerMod(scene.Scene);
+		const p = new PlayerMod(scene.Scene, player._id);
 		p.createPlayer();
 		p.holdGun();
 		this.scene = scene;

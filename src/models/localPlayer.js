@@ -1,4 +1,5 @@
 import Weapon from './weapon.js';
+import PlayerMod from './playerMod.js';
 export default class LocalPlayer {
 	constructor(
 		scene, player
@@ -8,7 +9,11 @@ export default class LocalPlayer {
 		
 		this.cameraSpeed = 0.6;
 		this.jumpHeight = 2.5;
-		this.mesh = this.scene.soldier;
+		const p = new PlayerMod(scene.Scene, player._id);
+		p.createPlayer();
+		p.holdGun();
+		p.run();
+		this.mesh = p;
 		this.mesh.name = player._id
 		this.mesh.player.setEnabled(true);
 		this.jumpUp = false;
@@ -114,7 +119,6 @@ export default class LocalPlayer {
 	}
 
 	onKeyDown(event) {
-		console.log(event)
 		this.scene.store.onKeyDown(event)
 	}
 
@@ -147,7 +151,6 @@ export default class LocalPlayer {
 	}
 
 	submitMovement() {
-		console.log('sub')
 		this.mesh.run();
 		this.mesh.player.position = new BABYLON.Vector3(this.scene.camera.position.x - 0.3, this.scene.camera.position.y - 0.5, this.scene.camera.position.z);
 		this.mesh.player.rotation.y = this.scene.camera.rotation.y;

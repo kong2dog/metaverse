@@ -1,7 +1,7 @@
 export default class PlayerMod {
-  constructor(scene) {
+  constructor(scene, name) {
     this.Scene = scene;
-
+		this.name = name;
   }
 	async loadGun() {
 		return new Promise(resolve => {
@@ -16,29 +16,13 @@ export default class PlayerMod {
 		})
 	}
   createPlayer() {
-
     this.player = new BABYLON.TransformNode("pivot");
 		this.player.setEnabled(false);
-		// this.gun.parent = this.player;
-		// this.gun.rotation.y = -Math.PI / 2;
-		// this.gun.setEnabled(false);
-		// this.gun.position.z -= 2;
-		// this.gun.position.x -= 0.5;
-		// this.gun.position.y -= 1;
-		// const CoTAxis = this.localAxes(2, 0);
-		// CoTAxis.parent = this.player;
 		this.player.position = new BABYLON.Vector3(0, 0.1, 0);
 		
 		const faceColors = [];
-		// faceColors[0] = BABYLON.Color3.Blue();
-		// faceColors[1] = BABYLON.Color3.White()
-		// faceColors[2] = BABYLON.Color3.Red();
-		// faceColors[3] = BABYLON.Color3.Black();
-		// faceColors[4] = BABYLON.Color3.Green();
-		// faceColors[5] = BABYLON.Color3.Yellow();
-		this.head = new BABYLON.MeshBuilder.CreateBox("head", {width: 1, height: 0.8, faceColors: faceColors}, this.Scene); 
+		this.head = new BABYLON.MeshBuilder.CreateBox(this.name, {width: 1, height: 0.8, faceColors: faceColors}, this.Scene); 
 		this.head.material = new BABYLON.StandardMaterial("headm", this.Scene);
-		// head.material.diffuseColor = new BABYLON.Color3(0.78, 0.27, 0.39);
 		this.head.parent = this.player;
 		const indices = this.head.getIndices();
 		const positions = this.head.getVerticesData(BABYLON.VertexBuffer.PositionKind);
@@ -60,11 +44,11 @@ export default class PlayerMod {
 		// head.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.4, 0))
 		this.head.locallyTranslate(new BABYLON.Vector3(0, 0.4, 0));;
 
-		const hair = new BABYLON.MeshBuilder.CreateBox("hair", {width: 1, height: 0.2}, this.Scene);
+		const hair = new BABYLON.MeshBuilder.CreateBox(this.name, {width: 1, height: 0.2}, this.Scene);
 		hair.setPivotMatrix(BABYLON.Matrix.Translation(0, -0.1, 0))
 		hair.parent = this.head;
 		hair.locallyTranslate(new BABYLON.Vector3(0, 0.5, 0));;
-		hair.material = new BABYLON.StandardMaterial("hairm", this.Scene);
+		hair.material = new BABYLON.StandardMaterial(this.name, this.Scene);
 		hair.material.diffuseColor = new BABYLON.Color3(0.61, 0.23, 0.29);
 		
 

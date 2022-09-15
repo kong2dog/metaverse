@@ -519,10 +519,10 @@ function _readOnlyError(name) {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (/* binding */ Controller)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(671);
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(144);
-/* harmony import */ var _models_localPlayer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(552);
-/* harmony import */ var _models_remotePlayer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(75);
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(671);
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(144);
+/* harmony import */ var _models_localPlayer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(552);
+/* harmony import */ var _models_remotePlayer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(75);
 /* harmony import */ var _models_Player_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(83);
 
 
@@ -533,7 +533,7 @@ var ws = new WebSocket('ws://49.234.96.253:9988');
 
 var Controller = /*#__PURE__*/function () {
   function Controller(scene) {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z)(this, Controller);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z)(this, Controller);
 
     this.isController = true;
     this.scene = scene;
@@ -543,7 +543,7 @@ var Controller = /*#__PURE__*/function () {
     this.addGameEvents();
   }
 
-  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z)(Controller, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Z)(Controller, [{
     key: "addEvents",
     value: function addEvents() {
       var _this = this;
@@ -699,7 +699,7 @@ var Controller = /*#__PURE__*/function () {
       console.log('set local');
       console.log(player);
       var p = this.clonePlayer(player);
-      this.store.state.localPlayer = new _models_localPlayer_js__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Z(this.scene, p);
+      this.store.state.localPlayer = new _models_localPlayer_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z(this.scene, p);
       console.log(this.store.state.localPlayer.Update);
       this.scene.load = true;
     }
@@ -761,7 +761,7 @@ var Controller = /*#__PURE__*/function () {
     key: "addRemotePlayer",
     value: function addRemotePlayer(player) {
       var p = this.clonePlayer(player);
-      var remotePlayer = new _models_remotePlayer_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z(this.scene, p);
+      var remotePlayer = new _models_remotePlayer_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z(this.scene, p);
       this.store.state.remotePlayers.push(remotePlayer);
     }
   }, {

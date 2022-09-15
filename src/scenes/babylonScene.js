@@ -94,12 +94,6 @@ export default class BabylonScene {
 	}
 
 	loadSolider() {
-		const p = new PlayerMod(this.Scene);
-		// this.showAxis(10);
-		p.createPlayer();
-		p.holdGun();
-		p.run()
-		this.soldier = p;
 		setTimeout(() => {
 			this.controller.requestAllPlayers()
 		}, 5000);
