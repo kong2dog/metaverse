@@ -55,7 +55,7 @@ task :deploy do
         command %{npm install --only=production}
         # command %{sequelize db:migrate --env=production}
         # command %{pm2 kill}
-        # command %{pm2 delete metaserver}
+        command %{pm2 delete metaserver}
         command %{pm2 restart ecosystem.json}
       end
     end
