@@ -14,18 +14,12 @@ export default class Controller {
 
     addEvents() {
         this.client.addEventListener('open', () => {
-            this.socketOpen()
+            // this.socketOpen()
         })
     }
 
     socketOpen() {
-        const urlSearchParams = new URLSearchParams(window.location.search);
-        const params = Object.fromEntries(urlSearchParams.entries());
-        const data = {
-            cmd: 'setId',
-            id: params.id
-        }
-        this.client.send(JSON.stringify(data))
+        // this.client.send(JSON.stringify(data))
     }
 
     hitPlayer(player) {
@@ -45,7 +39,7 @@ export default class Controller {
     addGameEvents() {
         this.client.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
-            console.log('client: %s', event);
+            console.log(data);
             if(data.cmd === 'start render'){
                 this.onStartRender()
             }else if(data.cmd === 'new player'){
@@ -116,6 +110,7 @@ export default class Controller {
     }
 
     onUpdateHitPoints(data) {
+        console.log(data)
         this.updateHitPointsLocalPlayer(data.hitPoints)
     }
 
@@ -169,7 +164,7 @@ export default class Controller {
         }else{
             let killer
             const dead = this._findPlayer(id);
-            dead.addDeath();
+            // dead.addDeath();
             if(killer === this.store.state.localPlayer._id){
                 killer = this.store.state.localPlayer;
                 this.store.state.localPlayer.addKill()
@@ -178,7 +173,7 @@ export default class Controller {
             }
             killer.addKill();
 
-            dead.gotKilled(killer)
+            // dead.gotKilled(killer)
         }
     }
 
@@ -190,6 +185,7 @@ export default class Controller {
     }
 
     addRemotePlayer(player) {
+        console.log('add' + player._id);
         const p = this.clonePlayer(player);
         const remotePlayer = new RemotePlayer(this.scene, p)
         this.store.state.remotePlayers.push(remotePlayer);

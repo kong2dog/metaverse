@@ -1,17 +1,21 @@
 import * as BABYLON from '@babylonjs/core';
 import Weapon from './weapon.js';
+import PlayerMod from './playerMod.js';
 export default class LocalPlayer {
 	constructor(
 		scene, player
 	) {
 		this.player = player;
 		this.scene = scene;
-		
+		const gun = this.scene.gun.createInstance(this.player._id + 'gun');
+		gun.rotation.y = -Math.PI / 2;
+		gun.isVisible = true;
+		gun.position.z -= 2;
+		gun.position.x -= 0.5;
+		gun.position.y -= 1;
 		this.cameraSpeed = 0.6;
 		this.jumpHeight = 2.5;
-		this.mesh = this.scene.soldier;
-		this.mesh.name = player._id
-		this.mesh.isVisible = false;
+		this.mesh = gun;
 		this.jumpUp = false;
 		this.isJumping = false;
 		this.scene.camera.speed = this.cameraSpeed;
@@ -26,7 +30,8 @@ export default class LocalPlayer {
 		this.lastRotation = new BABYLON.Vector3(this.scene.camera.rotation.x, this.scene.camera.rotation.y, this.scene.camera.rotation.z)
 		
 		this.bindEvent()
-		this.weapon = new Weapon(scene, player, scene.camera)
+		this.weapon = new Weapon(scene, player, this.mesh);
+		this.mesh.parent = this.scene.camera;
 	}
 
 	Update() {
@@ -103,7 +108,7 @@ export default class LocalPlayer {
 		this.scene.camera.checkCollisions = true;
 		this.scene.camera.useOctreeForCollisions = true;
 		this.scene.camera.applyGravity = true;
-		this.scene.camera.ellipsoid = new BABYLON.Vector3(3.2,1,1)
+		this.scene.camera.ellipsoid = new BABYLON.Vector3(3.2,2,1)
 	}
 
 	Create() {
@@ -130,6 +135,7 @@ export default class LocalPlayer {
 	}
 
 	updatePosition() {
+		
 		const xOffset = Math.abs(this.lastPosition.x - this.scene.camera.position.x);
     const yOffset = Math.abs(this.lastPosition.y - this.scene.camera.position.y);
     const zOffset = Math.abs(this.lastPosition.z - this.scene.camera.position.z);
@@ -148,8 +154,8 @@ export default class LocalPlayer {
 
 	submitMovement() {
 		console.log('sub')
-		this.mesh.position = new BABYLON.Vector3(this.scene.camera.position.x, this.scene.camera.position.y, this.scene.camera.position.z);
-		this.mesh.rotation.y = this.scene.camera.rotation.y;
+		//this.mesh.position = new BABYLON.Vector3(this.scene.camera.position.x, this.scene.camera.position.y, this.scene.camera.position.z);
+		//this.mesh.rotation.y = this.scene.camera.rotation.y;
 		this.scene.controller.sendLocalPlayerMovement(this.scene.camera.position, this.scene.camera.rotation);
     this.lastPosition = new BABYLON.Vector3(this.scene.camera.position.x , this.scene.camera.position.y , this.scene.camera.position.z);
     this.lastRotation = new BABYLON.Vector3(this.scene.camera.rotation.x , this.scene.camera.rotation.y , this.scene.camera.rotation.z);
@@ -168,7 +174,30 @@ export default class LocalPlayer {
 	}
 
 	jump() {
+		this.isJumping = true;
+		this.jumpUp = true;
+		const cam = this.scene.camera;
+		cam.animations = [];
+		const a = new BABYLON.Animation(
+			'a',
+			'position.y', 3,
+			BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+		);
+		const keys = [];
+		keys.push({ frame: 0, value: cam.position.y });
+    keys.push({ frame: 3, value: cam.position.y + this.jumpHeight });
+    a.setKeys(keys);
 
+    const easingFunction = new BABYLON.CircleEase();
+    easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+    a.setEasingFunction(easingFunction);
+ 
+    cam.animations.push(a);
+
+    this.scene.Scene.beginAnimation(cam, 0, 3, false, 1 , () => {
+      this.jumpUp = false;
+    });
 	}
 
 	checkFreeFall(){
@@ -176,7 +205,26 @@ export default class LocalPlayer {
 	}
 
 	checkJump() {
-
+		let pos, heightOfTerrain ,diff;
+    if(this.isJumping && !this.jumpUp){
+			let bias = 0.08; 
+			pos = this.scene.camera.position;
+			heightOfTerrain = this.scene.calcElevation(pos.x, pos.z);
+			diff = pos.y - heightOfTerrain -bias;
+			if(diff < this.player.getHeight()){
+				this.isJumping = false;  
+			}
+    } 
+    else if(!this.isJumping && !this.jumpUp){
+			//On low fps, the camera can jump and basicly "ignore" the gravity which means the player can fly
+			//To test against that affect this code is here, it checks if a player is off the ground without actually jumping and brings player back down
+			pos = this.scene.camera.position;
+			heightOfTerrain = this.scene.calcElevation(pos.x, pos.z);
+			diff = pos.y - heightOfTerrain;
+			if(diff > (0.5 + this.player.getHeight())){
+				this.scene.camera.position.y = heightOfTerrain + this.player.getHeight() + 0.1; 
+			}
+    }
 	}
 
 	Destroy() {

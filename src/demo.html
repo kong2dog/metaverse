@@ -143,15 +143,42 @@
         <div id="chatMsg_wrapper">
         </div>
     </div>
+    <!-- Info Panel for user name input -->
+    <div id="enter_user_name"> 
+        <div id="enter_user_name_center">
+            <form action="#" id="enter_username_form">
+                <input id="input_user_name" placeholder="输入用户名" />
+                <button onclick="startGame()" id="submit_user_name">加入</button>
+            </form>
+        </div>
+        <div id="controlls">
+            <div class="controll_wrapper">
+                <div class="controll">W</div>
+                <div class="controll_description">前</div>
+            </div>
+            <div class="controll_wrapper">
+                <div class="controll">A</div>
+                <div class="controll_description">左</div>
+            </div>
+            <div class="controll_wrapper">
+                <div class="controll">S</div>
+                <div class="controll_description">后</div>
+            </div>
+            <div class="controll_wrapper">
+                <div class="controll">D</div>
+                <div class="controll_description">右</div>
+            </div>
+        </div>
+    </div>
     <form id="chatInput" action="#">
         <div id="chatSymbol">>></div>
-         <input id="chatInputField" />
+        <input id="chatInputField" />
     </form>
     <div id="info_pannel">
     </div> 
     <div id="health_bar"><div id="health_filler"></div></div>
     <img id="gunsight" src="/gunPoint.png" />  
-    <div id="amo"><div id="currAmo"></div></div>
+    <div id="amo"><div id="currAmo"></div><img src="/bulletIcon.png"/></div>
     <div class="box" id="box">
         <div class="canvas-warp" id="warp"></div>
     </div>
@@ -167,6 +194,19 @@
 	}
     function restore() {
         window.app.scene.restoreCamera();
+    }
+    function startGame() {
+        const username = $('#input_user_name').val().trim();
+        if(!!username){
+            const data = {
+                cmd: 'setId',
+                id: username
+            }
+            window.app.scene.controller.client.send(JSON.stringify(data));
+            Pannel.hideUserInput();
+            window.app.scene.controller.requestAllPlayers();
+        }
+        // Pannel.hideUserInput();
     }
 </script>
 <style>

@@ -1,6 +1,6 @@
 import * as BABYLON from '@babylonjs/core';
 import 'babylonjs-loaders'
-
+import PlayerMod from '../models/playerMod.js';
 import Controller from '../controller/controller.js'
 import Sound from '../controller/sound.js';
 import initData from '../store/initData.js';
@@ -9,7 +9,6 @@ export default class BabylonScene {
 		engine, canvas, store
 	) {
 		this.canvas = canvas;
-		console.log(store)
 		this.store = store;
 		this.boxes = []
 		this.engine = engine;
@@ -24,15 +23,13 @@ export default class BabylonScene {
 		this.loadPhysics();
 		this.initSky();
 		this.loadGround();
-		this.loadBoxes();
+		// this.loadBoxes();
 		this.loadGun().then(() => {
-			this.loadSolider()
-			this.controller.requestAllPlayers()
 		})
 	}
 
 	initCamera() {
-		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 1, 0), this.Scene);
+		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(4, 4, 7), this.Scene);
 		this.camera.setTarget(new BABYLON.Vector3(3, 0, 0))
 		this.camera.attachControl(this.canvas, false);
 		this.Scene.activeCameras.push(this.camera)
@@ -86,14 +83,28 @@ export default class BabylonScene {
 		// this.ground.physicsImpostor = new BABYLON.PhysicsImpostor(this.ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0.7 }, this.Scene); 
 	}
 
+	calcElevation(x, z) {
+		const ray = new BABYLON.Ray(new BABYLON.Vector3(0, this.topPoint + 10 , 0), new BABYLON.Vector3(0, this.bottomPoint - 10,0), ((this.topPoint - this.bottomPoint)+20));
+		ray.origin.x = x;
+		ray.origin.z = z;  
+		const i = this.ground.intersects(ray);
+			
+		if (!i || !i.pickedPoint) {
+			return false;
+		}
+
+		return i.pickedPoint.y;
+	}
+
 	async loadGun() {
 		return new Promise(resolve => {
 			window.BABYLON.SceneLoader.ImportMesh('', '/', "weapon_2.obj", this.Scene, (mesh) => {
-				this.gun = mesh;
-				this.gun[0].isVisible = false;
-				this.gun[0].material = new BABYLON.StandardMaterial("Mat", this.Scene);
-        this.gun[0].material.diffuseTexture = new BABYLON.Texture("/weapon_2.png", this.Scene);
-        this.gun[0].material.diffuseTexture.hasAlpha = true;  
+				this.gun = mesh[0];
+				this.gun.setEnabled(false)
+				this.gun.isVisible = false;
+				this.gun.material = new BABYLON.StandardMaterial("Mat", this.Scene);
+        this.gun.material.diffuseTexture = new BABYLON.Texture("/weapon_2.png", this.Scene);
+        this.gun.material.diffuseTexture.hasAlpha = true;  
 				resolve(mesh)
 			});
 		})
@@ -101,12 +112,11 @@ export default class BabylonScene {
 
 	loadSolider() {
 		const soldier = new BABYLON.MeshBuilder.CreateBox("soldier", {size: 8}, this.Scene);
-    console.log(soldier)
 		soldier.material = new BABYLON.StandardMaterial("Mat1", this.Scene);
     soldier.material.diffuseColor = new BABYLON.Color3(0, 0, 1);
 		this.soldier = soldier;
 		this.soldier.isVisible = false;
-		this.soldier.position = new BABYLON.Vector3(0, 0, 0); 
+		this.soldier.position = new BABYLON.Vector3(0, 0, 0);
 	}
 
 	loadPhysics() {
@@ -148,15 +158,15 @@ export default class BabylonScene {
 	}
 
 	loadLight() {
-		this.lightHem = new BABYLON.HemisphericLight("lightHem", new BABYLON.Vector3(0, 100, 0), this.Scene);
-    this.lightHem.intensity = 0.4;
-		this.lightDir = new BABYLON.DirectionalLight("lightDir", new BABYLON.Vector3(-2, -4, 2), this.Scene);    
+		this.lightHem = new BABYLON.HemisphericLight("lightHem", new BABYLON.Vector3(0, 0, 0), this.Scene);
+    this.lightHem.intensity = 0.8;
+		this.lightDir = new BABYLON.DirectionalLight("lightDir", new BABYLON.Vector3(2, 4, 2), this.Scene);    
 		this.lightDir.diffuse = new BABYLON.Color3(1, 1, 1);	
 		this.lightDir.specular = new BABYLON.Color3(0, 0, 0);
 		this.lightDir.position = new BABYLON.Vector3(250, 400, 0);
     this.lightDir.intensity = 1.8;
 		this.shadowGenerator = new BABYLON.ShadowGenerator(4192, this.lightDir);
-    this.shadowGenerator.useVarianceShadowMap = true; 
+    this.shadowGenerator.useVarianceShadowMap = false; 
 	}
 
 	Update() {

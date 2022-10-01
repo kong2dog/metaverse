@@ -34,7 +34,6 @@ wss.on('connection', function connection(wsclient) {
 	wsclient.isAlive = true;
   wsclient.on('pong', heartbeat);
 	wsclient.on('message', (bu) => {
-		console.log(bu.toString())
 		let data 
 		try{
 			data = JSON.parse(bu.toString())
@@ -42,9 +41,10 @@ wss.on('connection', function connection(wsclient) {
 			data = bu.toString()
 		}
 		if(data.cmd === 'setId'){
+			console.log(data.id)
 			wsclient.id = data.id
 			onClientConnect(wsclient)
-			onSetUserName(wsclient, {userName: data.id})
+			// onSetUserName(wsclient, {userName: data.id})
 		}else	if(data.cmd === 'set userName'){
 			onSetUserName(wsclient, data)
 		}else if(data.cmd === 'disconnect'){
@@ -54,15 +54,9 @@ wss.on('connection', function connection(wsclient) {
 		}else if(data.cmd === 'update position'){
 			onUpdatePosition(wsclient, data);
 		}else if(data.cmd === 'hit player'){
-			onPlayerHit(data);
-		}else if(data.cmd === 'player suicide'){
-			onPlayerSuicide(data);
-		}else if(data.cmd === 'request respawn'){
-			onRespawnPlayer()
+			onPlayerHit(wsclient, data);
 		}else if(data.cmd === 'player fired shot'){
 			onShotFired(data)
-		}else if(data.cmd === 'send msg'){
-			onClientSentMsg(data)
 		}
 	});
 	wsclient.on('close', () => {
@@ -84,15 +78,14 @@ function onClientConnect(client) {
 	util.log("New Player has connected: " + client.id);
   //Create a player for this ID
 	//ToDo: Check if position is available for the loaded level
-	const newPlayer = new Player((Math.random() - 0.5) * spread , 0 , (Math.random() - 0.5) * spread); 
+	//const newPlayer = new Player((Math.random() - 0.5) * spread , 0 , (Math.random() - 0.5) * spread); 
+	const newPlayer = new Player(0, 0 , 7); 
 	newPlayer._id = client.id;   
 	newPlayer.setColor(Math.random(), Math.random(), Math.random()); 
 	players.push(newPlayer);
-	console.log(newPlayer)
 }
 
 function onClientRequestInit(wsclient, data) {
-	console.log(wsclient.id)
 	// Find clients player
   const clientPlayer = playerById(wsclient.id);
   // Player not found
@@ -112,8 +105,6 @@ function onClientRequestInit(wsclient, data) {
   wsclient.send(JSON.stringify({cmd: 'init game', localPlayer: clientPlayer , remotePlayers : remotePlayers }));
   // Tell all current players, there is a new player
 	wss.clients.forEach((client) => {
-		console.log(client.id)
-		console.log(wsclient.id)
 		if (client !== wsclient && client.readyState === WebSocket.OPEN) {
 			client.send(JSON.stringify({cmd: 'new player', player: clientPlayer}, { binary: false }));
 		}
@@ -139,7 +130,6 @@ function onClientDisconnect(wsclient) {
 }
 
 function onUpdatePosition(wsclient, data) {
-	console.log(data)
 	const movedPlayer = playerById(wsclient.id);
 	// Player not found
 	if (!movedPlayer) {
@@ -157,7 +147,7 @@ function onUpdatePosition(wsclient, data) {
 	});
 }
 
-function onPlayerHit(data) {
+function onPlayerHit(wsclient, data) {
 	const hitPlayer = playerById(data.id);
   const shooter = playerById(data.shooterId);
     
@@ -179,7 +169,7 @@ function onPlayerHit(data) {
 		shooter.addKill(); 
 		//Send all players that this player is dead (plus the sender itself, thast why no broadcast is used)
 		wss.clients.forEach((client) => {
-			if (client !== this && client.readyState === WebSocket.OPEN) {
+			if (client !== wsclient && client.readyState === WebSocket.OPEN) {
 				client.send(JSON.stringify({
 					cmd: 'player dead', 
 					id : data.id, 
@@ -190,7 +180,7 @@ function onPlayerHit(data) {
 	} else{
       //Send player his new hitpoints
 			wss.clients.forEach((client) => {
-				if(+client.id === +data.id) {
+				if(client.id === data.id) {
 					client.send(
 						JSON.stringify({
 							cmd: 'update hitpoints',
@@ -216,35 +206,12 @@ function onRespawnPlayer() {
 	}
 }
 
-function onPlayerSuicide(){
-	const suicidePlayer = playerById(this.id);
-	if(!suicidePlayer.isDead()){
-		suicidePlayer.addDeath();
-		suicidePlayer.setDead(true);  
-		wss.clients.forEach((client) => {
-			if (client.readyState === WebSocket.OPEN) {
-				client.send({cmd: 'player dead',  id: this.id , killer: this.id });
-			}
-		});
-	}
-}
-
 function onShotFired(data){
 	const shooter = playerById(data.id);
 	const position = shooter.getXYZ(); 
 	wss.clients.forEach((client) => {
-		if (+client.id !== +data.id && client.readyState === WebSocket.OPEN) {
+		if (client.id !== data.id && client.readyState === WebSocket.OPEN) {
 			client.send(JSON.stringify({cmd: 'shot fired', pos: position }));
-		}
-	});
-}
-
-//data.msg => msg content
-function onClientSentMsg(data){
-	//Send this msg to all other clients (including self)
-	wss.clients.forEach((client) => {
-		if (client.readyState === WebSocket.OPEN) {
-			client.send({cmd: 'recived msg', from: this.id, msg: data.msg});
 		}
 	});
 }
@@ -260,8 +227,6 @@ function playerById(id) {
 
 const interval = setInterval(()=> {
   wss.clients.forEach((ws) => {
-		console.log('check' + ws.id)
-		console.log('check' + ws.isAlive)
     if (ws.isAlive === false) {
 			console.log('dis' + ws.id)
 			onClientDisconnect(ws)

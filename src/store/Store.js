@@ -58,7 +58,7 @@ export default class Store {
 
   isDown(keyCode) {
 
-    const bool = false; 
+    let bool = false; 
     if(this.state.disabled){
       //Only check for closing chat
       if(keyCode == this.state.CHAT && this.state._pressed[keyCode]){

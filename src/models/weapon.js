@@ -1,18 +1,19 @@
 import * as BABYLON from '@babylonjs/core';
 
 export default class Weapon {
-  constructor(scene, player, parent) {
+  constructor(scene, player, mesh) {
     this.scene = scene;
     this.player = player;
-    const wp = this.scene.gun[0].createInstance(player._id);
-    console.log(wp)
-    wp.isVisible = true;
-    wp.rotationQuaternion = null;
-    wp.parent = parent;
-    wp.position = new BABYLON.Vector3(-0.2,-1.2,2); 
-   // wp.rotation.x = -Math.PI/2;
-    wp.rotation.y = -Math.PI / 2;
-    this.mesh = wp;
+    this.mesh = mesh;
+    //const wp = this.scene.gun.createInstance(player._id);
+  //   console.log(wp)
+  //   wp.isVisible = true;
+  //   wp.rotationQuaternion = null;
+  //   wp.parent = parent;
+  //   wp.position = new BABYLON.Vector3(-0.2,-1.2,2); 
+  //  // wp.rotation.x = -Math.PI/2;
+  //   wp.rotation.y = -Math.PI / 2;
+  //   this.mesh = wp;
     this._initialRotation = this.mesh.rotation.clone();
     this.ammoSize = 14;
     this.currentAmmo = this.ammoSize;
@@ -56,12 +57,13 @@ export default class Weapon {
         if(pickResult.pickedMesh){
           console.log(pickResult.pickedMesh.name)
           for(let i = 0; i < this.scene.store.state.remotePlayers.length; i++) {
+            console.log(this.scene.store.state.remotePlayers[i].player)
             if(pickResult.pickedMesh.name === this.scene.store.state.remotePlayers[i].player._id){
               this.scene.controller.hitPlayer(this.scene.store.state.remotePlayers[i].player)
             }
           }
           if(pickResult.pickedMesh.name != 'skyBox'){
-            this.drawImpact(pickResult.pickedPoint);
+            // this.drawImpact(pickResult.pickedPoint);
           }
         }
         this.scene.controller.shotFired();

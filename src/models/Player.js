@@ -67,6 +67,10 @@ export default class Player {
 		this._hitPoints = h;
 	}
 
+	getHeight() {
+		return this._height;
+	}
+
 	getHitPoints() {
     return this._hitPoints;
 	}
