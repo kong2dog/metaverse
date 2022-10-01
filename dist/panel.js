@@ -113,12 +113,12 @@ $(document).ready(function(){
   $("#input_user_name").focus();
 });
 $("#enter_username_form").submit(function(e){
-e.preventDefault();
-var userName = $("#input_user_name").val();
-  if(userName != ""){
-  $(this).hide();
-  $(this).parents("#enter_user_name_center").append("<div id='wait_info'>Game is loading...</div>")
-      sendUserName(userName);
-  }
-return false;
+    e.preventDefault();
+    var userName = $("#input_user_name").val();
+    if(userName != ""){
+    $(this).hide();
+    $(this).parents("#enter_user_name_center").append("<div id='wait_info'>Game is loading...</div>")
+        sendUserName(userName);
+    }
+    return false;
 });
