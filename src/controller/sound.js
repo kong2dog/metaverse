@@ -1,5 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
-
 export default class Sound {
   constructor(scene) {
     this.gunShot = new BABYLON.Sound('gunshot', '/weapon_2.mp3', scene, null, { volume: 0.1 })

@@ -1,5 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
-
 export default class Weapon {
   constructor(scene, player, mesh) {
     this.scene = scene;

@@ -1,4 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
 import Weapon from './weapon.js';
 import PlayerMod from './playerMod.js';
 export default class LocalPlayer {
@@ -108,7 +107,8 @@ export default class LocalPlayer {
 		this.scene.camera.checkCollisions = true;
 		this.scene.camera.useOctreeForCollisions = true;
 		this.scene.camera.applyGravity = true;
-		this.scene.camera.ellipsoid = new BABYLON.Vector3(3.2,2,1)
+		this.scene.camera.ellipsoid = new BABYLON.Vector3(1,2,1)
+		// this.scene.camera.ellipsoidOffset = new BABYLON.Vector3(0,2,0)
 	}
 
 	Create() {
@@ -119,7 +119,6 @@ export default class LocalPlayer {
 	}
 
 	onKeyDown(event) {
-		console.log(event)
 		this.scene.store.onKeyDown(event)
 	}
 
@@ -130,7 +129,7 @@ export default class LocalPlayer {
 
 	resetCameraCoordinates() {
 		this.scene.camera.position.x = this.player._x;
-		this.scene.camera.position.y = this.player._y;
+		this.scene.camera.position.y = this.player._y + 1;
 		this.scene.camera.position.z = this.player._z;
 	}
 
@@ -157,7 +156,7 @@ export default class LocalPlayer {
 		//this.mesh.position = new BABYLON.Vector3(this.scene.camera.position.x, this.scene.camera.position.y, this.scene.camera.position.z);
 		//this.mesh.rotation.y = this.scene.camera.rotation.y;
 		this.scene.controller.sendLocalPlayerMovement(this.scene.camera.position, this.scene.camera.rotation);
-    this.lastPosition = new BABYLON.Vector3(this.scene.camera.position.x , this.scene.camera.position.y , this.scene.camera.position.z);
+    this.lastPosition = new BABYLON.Vector3(this.scene.camera.position.x - 0.3, this.scene.camera.position.y -0.5, this.scene.camera.position.z);
     this.lastRotation = new BABYLON.Vector3(this.scene.camera.rotation.x , this.scene.camera.rotation.y , this.scene.camera.rotation.z);
 	}
 

@@ -1,6 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
-import 'babylonjs-loaders'
-import PlayerMod from '../models/playerMod.js';
 import Controller from '../controller/controller.js'
 import Sound from '../controller/sound.js';
 import initData from '../store/initData.js';
@@ -25,12 +22,13 @@ export default class BabylonScene {
 		this.loadGround();
 		// this.loadBoxes();
 		this.loadGun().then(() => {
+			// this.loadSolider()
 		})
 	}
 
 	initCamera() {
-		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(4, 4, 7), this.Scene);
-		this.camera.setTarget(new BABYLON.Vector3(3, 0, 0))
+		this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 1.5, 7), this.Scene);
+		this.camera.setTarget(new BABYLON.Vector3(0, 0, -1))
 		this.camera.attachControl(this.canvas, false);
 		this.Scene.activeCameras.push(this.camera)
 		// this.camera2 = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(10, 1, 0), this.Scene);
@@ -143,7 +141,7 @@ export default class BabylonScene {
     //this.box.position.y = this.render.terrain.calcElevation(5, 10) + 5;
     
     for (var i = 0; i < initData.boxSize; i++) {
-        const clone = box.createInstance("box"+i);
+        const clone = box.createInstance("box" + i);
         clone.type = 'box';
         clone.position.x = initData.boxPosition[i*2]; 
         clone.position.z = initData.boxPosition[i*2 + 1];

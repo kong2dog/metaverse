@@ -1,4 +1,3 @@
-import * as BABYLON from '@babylonjs/core';
 import Weapon from './weapon.js'
 import PlayerMod from './playerMod.js';
 export default class remotePlayer {
@@ -43,6 +42,7 @@ export default class remotePlayer {
 		console.log(pos)
 		this.mesh.player.position = new BABYLON.Vector3(pos.x, pos.y, pos.z);
 		this.mesh.player.rotation.y = rot.y;
+		this.mesh.run();
 	}
 
 	gotKilled(killer){
@@ -77,6 +77,6 @@ export default class remotePlayer {
 	}
 
 	Destroy() {
-		this.mesh.dispose()
+		this.mesh.player.dispose()
 	}
 }

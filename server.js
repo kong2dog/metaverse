@@ -1,6 +1,6 @@
 import ws, {WebSocketServer, WebSocket} from 'ws'
 import util from 'util'
-import Player from '../models/Player.js'
+import Player from './src/models/Player.js'
 const players = [];
 const spread = 400;
 
@@ -27,7 +27,6 @@ const wss = new WebSocketServer({
 	}
 })
 function heartbeat() {
-	console.log(this.id)
   this.isAlive = true;
 }
 wss.on('connection', function connection(wsclient) {
@@ -78,8 +77,8 @@ function onClientConnect(client) {
 	util.log("New Player has connected: " + client.id);
   //Create a player for this ID
 	//ToDo: Check if position is available for the loaded level
-	//const newPlayer = new Player((Math.random() - 0.5) * spread , 0 , (Math.random() - 0.5) * spread); 
-	const newPlayer = new Player(0, 0 , 7); 
+	const newPlayer = new Player((Math.random() - 0.5) * spread , 1 , (Math.random() - 0.5) * spread); 
+	// const newPlayer = new Player(0, 0 , 7); 
 	newPlayer._id = client.id;   
 	newPlayer.setColor(Math.random(), Math.random(), Math.random()); 
 	players.push(newPlayer);
@@ -148,6 +147,7 @@ function onUpdatePosition(wsclient, data) {
 }
 
 function onPlayerHit(wsclient, data) {
+	console.log(data)
 	const hitPlayer = playerById(data.id);
   const shooter = playerById(data.shooterId);
     
@@ -228,7 +228,6 @@ function playerById(id) {
 const interval = setInterval(()=> {
   wss.clients.forEach((ws) => {
     if (ws.isAlive === false) {
-			console.log('dis' + ws.id)
 			onClientDisconnect(ws)
 			return;
 		}
