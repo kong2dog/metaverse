@@ -470,5 +470,7 @@ const pickResult = this.scene.Scene.pick(width/2, height/2, null, false, this.sc
 
 前端启动命令： npm run start
 
+需要将metaverse/src/controller/controller.js 中的websocket的ip改为自己的ip
+
 
 
