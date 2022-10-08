@@ -466,3 +466,9 @@ const pickResult = this.scene.Scene.pick(width/2, height/2, null, false, this.sc
 
 源码地址：[https://github.com/kong2dog/metaverse](https://github.com/kong2dog/metaverse)
 
+后端启动命令： node ./server.js
+
+前端启动命令： npm run start
+
+
+
